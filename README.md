@@ -4,7 +4,7 @@
 ![Laravel](https://img.shields.io/badge/Laravel-13-FF2D20?logo=laravel&logoColor=white)
 ![Livewire](https://img.shields.io/badge/Livewire-4-FB70A9?logo=livewire&logoColor=white)
 ![Bootstrap](https://img.shields.io/badge/Bootstrap-5.3-7952B3?logo=bootstrap&logoColor=white)
-[![Test](https://github.com/DarioDidonna/presto_dario_didonna/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/DarioDidonna/presto_dario_didonna/actions/workflows/tests.yml)
+[![Test](https://github.com/DarioDidonna/presto-ai-marketplace/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/DarioDidonna/presto-ai-marketplace/actions/workflows/tests.yml)
 
 **Marketplace di annunci con moderazione umana e analisi delle immagini tramite intelligenza artificiale.**
 
@@ -147,8 +147,8 @@ flowchart LR
 **Requisiti:** PHP 8.2+ con estensione GD, Composer, Node.js 20.19+ (o 22.12+), MySQL.
 
 ```bash
-git clone git@github.com:DarioDidonna/presto_dario_didonna.git
-cd presto_dario_didonna
+git clone git@github.com:DarioDidonna/presto-ai-marketplace.git
+cd presto-ai-marketplace
 
 composer install
 npm install
