@@ -15,8 +15,27 @@ concurrency:
 
 jobs:
   tests:
-    name: PHPUnit
+    name: PHPUnit (${{ matrix.database }})
     runs-on: ubuntu-latest
+
+    # SQLite in memoria è veloce; MySQL è il database vero del progetto e l'unico con i lock sulle righe
+    # (il test sugli acquisti simultanei gira solo lì)
+    strategy:
+      fail-fast: false
+      matrix:
+        database: [sqlite, mysql]
+
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_DATABASE: presto_test
+          MYSQL_ROOT_PASSWORD: root
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -proot --silent"
+          --health-interval=3s --health-timeout=5s --health-retries=30
 
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
@@ -25,7 +44,7 @@ jobs:
         uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # v2
         with:
           php-version: '8.4'
-          extensions: gd, exif, fileinfo, mbstring, pdo_sqlite
+          extensions: gd, exif, fileinfo, mbstring, pdo_sqlite, pdo_mysql
           coverage: none
 
       - name: Node.js 22
@@ -54,9 +73,17 @@ jobs:
           cp .env.example .env
           php artisan key:generate
 
-      # phpunit.xml usa SQLite in memoria e Scout "collection": nessun servizio esterno necessario
+      # phpunit.xml usa SQLite in memoria e Scout "collection"; le variabili qui sotto lo sostituiscono con MySQL.
+      # Su MySQL nessun test può essere saltato: il test sugli acquisti simultanei deve girare davvero
       - name: Test
-        run: php artisan test
+        env:
+          DB_CONNECTION: ${{ matrix.database }}
+          DB_DATABASE: ${{ matrix.database == 'mysql' && 'presto_test' || ':memory:' }}
+          DB_HOST: 127.0.0.1
+          DB_PORT: 3306
+          DB_USERNAME: root
+          DB_PASSWORD: root
+        run: php artisan test ${{ matrix.database == 'mysql' && '--fail-on-skipped' || '' }}
 
   pint:
     name: Stile del codice (Pint)
