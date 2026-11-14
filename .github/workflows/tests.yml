@@ -1,7 +1,10 @@
 name: Test
 
+# Sui rami la CI parte dalla PR; il push la fa partire solo su main (dopo il merge).
+# Prima girava due volte per ogni PR: una per il push sul ramo e una per la PR.
 on:
   push:
+    branches: [main]
   pull_request:
 
 # Il token del workflow può solo leggere il repository
@@ -45,7 +48,8 @@ jobs:
         with:
           php-version: '8.4'
           extensions: gd, exif, fileinfo, mbstring, pdo_sqlite, pdo_mysql
-          coverage: none
+          # PCOV solo nel job MySQL, il più completo (include il test sugli acquisti simultanei)
+          coverage: ${{ matrix.database == 'mysql' && 'pcov' || 'none' }}
 
       - name: Node.js 22
         uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
@@ -83,7 +87,21 @@ jobs:
           DB_PORT: 3306
           DB_USERNAME: root
           DB_PASSWORD: root
-        run: php artisan test ${{ matrix.database == 'mysql' && '--fail-on-skipped' || '' }}
+        run: |
+          if [ "${{ matrix.database }}" = "mysql" ]; then
+            vendor/bin/phpunit --fail-on-skipped --coverage-text=coverage.txt --only-summary-for-coverage-text
+          else
+            php artisan test
+          fi
+
+      # Percentuale di righe coperte nel riepilogo della CI; sotto la soglia il job fallisce
+      - name: Copertura (soglia 90%)
+        if: matrix.database == 'mysql'
+        run: |
+          lines=$(grep -oE 'Lines: +[0-9.]+%' coverage.txt | grep -oE '[0-9.]+')
+          echo "### Copertura PHP: ${lines}% delle righe (soglia 90%)" >> "$GITHUB_STEP_SUMMARY"
+          grep -E 'Classes|Methods|Lines' coverage.txt | sed 's/^ */- /' >> "$GITHUB_STEP_SUMMARY"
+          awk -v l="$lines" 'BEGIN { exit (l + 0 < 90) }'
 
   pint:
     name: Stile del codice (Pint)
@@ -150,9 +168,11 @@ jobs:
       - name: Dipendenze (versioni bloccate da uv.lock)
         run: uv sync --locked
 
-      # I test usano un modello e un Laravel finti: Ollama non serve
+      # I test usano un modello e un Laravel finti: Ollama non serve. Copertura con soglia 90%
       - name: Test
-        run: uv run pytest
+        run: |
+          uv run pytest --cov=presto_ai_agent --cov-report=term --cov-fail-under=90
+          echo "### Copertura Python: $(uv run coverage report --format=total)% delle istruzioni (soglia 90%)" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Stile (ruff)
         run: |
