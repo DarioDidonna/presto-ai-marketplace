@@ -47,6 +47,13 @@ updates:
     schedule:
       interval: weekly
       day: monday
+    ignore:
+      # PHP come in composer.json e nella CI (8.4): si cambia insieme, a mano, non solo nell'immagine
+      - dependency-name: php
+        update-types: [version-update:semver-major, version-update:semver-minor]
+      # Node solo versioni LTS (22 ora): le dispari come la 25 non lo sono mai; si passa a mano alla prossima LTS
+      - dependency-name: node
+        update-types: [version-update:semver-major]
     groups:
       docker:
         update-types: [minor, patch]
@@ -56,6 +63,10 @@ updates:
     schedule:
       interval: weekly
       day: monday
+    ignore:
+      # MySQL 8.4 è la versione LTS ed è quella della CI: solo le patch (8.4.x)
+      - dependency-name: mysql
+        update-types: [version-update:semver-major, version-update:semver-minor]
     groups:
       compose:
         update-types: [minor, patch]
