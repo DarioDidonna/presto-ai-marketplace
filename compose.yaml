@@ -98,7 +98,7 @@ services:
       retries: 10
 
   mysql:
-    image: mysql:8.4
+    image: mysql:26.10
     restart: unless-stopped
     environment:
       MYSQL_DATABASE: presto
