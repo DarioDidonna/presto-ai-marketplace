@@ -16,16 +16,22 @@ class QueryCountTest extends TestCase
 
     private const MAX_QUERIES = 12;
 
+    private Category $category;
+
+    private Article $article;
+
     protected function setUp(): void
     {
         parent::setUp();
         $categories = Category::factory()->count(3)->create();
+        $this->category = $categories[1];
         foreach (range(1, 10) as $n) {
             $article = Article::factory()
                 ->for($categories[$n % 3])
                 ->state(['title' => "Articolo numero $n", 'is_accepted' => $n === 10 ? null : true])
                 ->create();
             $article->images()->create(['path' => "articles/{$article->id}/a.jpg"]);
+            $this->article ??= $article;
         }
     }
 
@@ -34,9 +40,10 @@ class QueryCountTest extends TestCase
         return [
             'homepage' => ['/'],
             'indice' => ['/article/index'],
-            'categoria' => ['/category/2'],
+            // ID letti dai modelli creati: su MySQL i contatori non ripartono da 1 a ogni test
+            'categoria' => ['/category/{category}'],
             'ricerca' => ['/article/index?query=Articolo&min_price=1&sort=price_desc'],
-            'dettaglio' => ['/show/article/1'],
+            'dettaglio' => ['/show/article/{article}'],
             'revisore' => ['/revisor/index'],
         ];
     }
@@ -45,17 +52,20 @@ class QueryCountTest extends TestCase
     public function test_page_query_count_does_not_grow_with_articles(string $url): void
     {
         $revisor = User::factory()->revisor()->create();
+        $url = strtr($url, ['{category}' => $this->category->id, '{article}' => $this->article->id]);
 
         DB::enableQueryLog();
         $this->actingAs($revisor)->get($url)->assertOk();
-        $queries = array_column(DB::getQueryLog(), 'query');
+        // Senza virgolette: SQLite scrive "articles", MySQL `articles`
+        $queries = str_replace(['"', '`'], '', array_column(DB::getQueryLog(), 'query'));
         // Il driver Scout "collection" (solo test) chiama toSearchableArray() su ogni articolo:
         // quelle query non esistono in produzione con TNTSearch, quindi non le contiamo
         if (str_contains($url, 'query=')) {
-            $firstEngineQuery = array_search('select * from "articles" order by "articles"."id" desc', $queries);
+            $firstEngineQuery = array_search('select * from articles order by articles.id desc', $queries);
+            $this->assertIsInt($firstEngineQuery, 'Query del motore di ricerca non trovata: il filtro non toglierebbe nulla');
             $queries = array_values(array_filter(
                 $queries,
-                fn ($q, $i) => ! ($i > $firstEngineQuery && str_contains($q, '"categories"."id" = ? limit 1')),
+                fn ($q, $i) => ! ($i > $firstEngineQuery && str_contains($q, 'categories.id = ? limit 1')),
                 ARRAY_FILTER_USE_BOTH
             ));
         }
