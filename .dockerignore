@@ -1,0 +1,32 @@
+# Mai nell'immagine: segreti e configurazione locale
+.env
+.env.*
+!.env.example
+google_credential*
+ai-agent/.env
+auth.json
+
+# Rigenerati durante la build o nei volumi
+.git
+node_modules
+vendor
+public/build
+public/hot
+public/storage
+storage
+bootstrap/cache/*.php
+ai-agent/.venv
+**/__pycache__
+**/.pytest_cache
+**/.ruff_cache
+
+# Non servono per far girare il sito
+docs
+graphify-out
+tests
+.github
+.vscode
+.idea
+.DS_Store
+.phpunit.result.cache
+*.log

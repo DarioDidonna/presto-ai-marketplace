@@ -159,3 +159,32 @@ jobs:
         run: |
           uv export --locked --no-dev --no-hashes --no-emit-project -o requirements-audit.txt
           uvx pip-audit --no-deps --disable-pip -r requirements-audit.txt
+
+  docker:
+    name: Avvio con Docker
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      # Lo stesso comando del README, senza Ollama: sito, coda, Reverb, MySQL e agente (volti)
+      - name: Build e avvio
+        run: docker compose up -d --build --wait --wait-timeout 300
+
+      - name: Il sito risponde con gli annunci demo
+        run: |
+          curl -fsS http://localhost:8000/up -o /dev/null
+          curl -fsS http://localhost:8000/article/index | grep -q '/storage/articles/'
+
+      - name: L'agente controlla i volti di tutte le foto demo
+        run: |
+          for attempt in $(seq 1 30); do
+            left=$(docker compose exec -T -e HOME=/tmp app php artisan tinker --execute 'echo App\Models\Image::whereNull("faces_count")->count();')
+            [ "$left" = "0" ] && exit 0
+            sleep 2
+          done
+          echo "Foto ancora da controllare: $left" && exit 1
+
+      - name: Log dei container
+        if: failure()
+        run: docker compose logs --tail=80

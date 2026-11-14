@@ -1,0 +1,137 @@
+# Presto.it in locale con un solo comando:   docker compose up --build
+# Sito su http://localhost:8000 (account demo nel README). Tutto resta su questo computer: le porte sono aperte
+# solo su 127.0.0.1, database e agente AI non sono raggiungibili da fuori.
+#
+# Assistente AI e "Compila con l'AI" usano Ollama:
+#   - con Ollama già installato sul Mac (più veloce, usa la GPU):
+#       OLLAMA_URL=http://host.docker.internal:11434 docker compose up --build
+#   - oppure Ollama in un container (solo CPU, scarica qwen2.5:3b, ~2 GB, al primo avvio):
+#       docker compose --profile ai up --build
+# Senza Ollama il sito funziona comunque e i volti nelle foto vengono oscurati (il rilevatore non usa Ollama).
+
+name: presto
+
+x-laravel: &laravel
+  build: .
+  image: presto-app
+  restart: unless-stopped
+  volumes:
+    - storage:/var/www/html/storage
+  environment: &laravel-env
+    APP_NAME: Presto.it
+    APP_ENV: local
+    APP_DEBUG: "true"
+    APP_URL: http://localhost:8000
+    APP_LOCALE: it
+    APP_FALLBACK_LOCALE: en
+    LOG_CHANNEL: stderr
+    DB_CONNECTION: mysql
+    DB_HOST: mysql
+    DB_PORT: 3306
+    DB_DATABASE: presto
+    DB_USERNAME: presto
+    DB_PASSWORD: presto
+    SESSION_DRIVER: database
+    CACHE_STORE: database
+    QUEUE_CONNECTION: database
+    SCOUT_DRIVER: tntsearch
+    MAIL_MAILER: log
+    BROADCAST_CONNECTION: reverb
+    REVERB_APP_ID: presto-local
+    REVERB_APP_KEY: presto-local-key
+    REVERB_APP_SECRET: presto-local-secret
+    # Laravel trasmette a Reverb sulla rete interna; il browser si collega a localhost:8080 (valori nel build di Vite)
+    REVERB_HOST: reverb
+    REVERB_PORT: 8080
+    REVERB_SCHEME: http
+    AI_AGENT_URL: http://agent:8001
+    # Token valido solo dentro la rete dei container (l'agente non ha porte aperte verso l'esterno)
+    AI_AGENT_TOKEN: ${AI_AGENT_TOKEN:-presto-docker-local-token}
+
+services:
+  app:
+    <<: *laravel
+    ports:
+      - "127.0.0.1:8000:8000"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "php", "-r", "exit(@file_get_contents('http://127.0.0.1:8000/up') === false ? 1 : 0);"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      # Il primo avvio crea le tabelle e i dati demo (24 annunci con foto)
+      start_period: 180s
+
+  queue:
+    <<: *laravel
+    command: ["php", "artisan", "queue:work", "--sleep=1"]
+    depends_on:
+      app:
+        condition: service_healthy
+
+  reverb:
+    <<: *laravel
+    command: ["php", "artisan", "reverb:start", "--host=0.0.0.0", "--port=8080"]
+    ports:
+      - "127.0.0.1:8080:8080"
+    depends_on:
+      app:
+        condition: service_healthy
+
+  agent:
+    build: ./ai-agent
+    image: presto-agent
+    restart: unless-stopped
+    environment:
+      PRESTO_AI_LARAVEL_URL: http://app:8000
+      PRESTO_AI_API_TOKEN: ${AI_AGENT_TOKEN:-presto-docker-local-token}
+      PRESTO_AI_OLLAMA_BASE_URL: ${OLLAMA_URL:-http://ollama:11434}
+    extra_hosts:
+      # Ollama installato sul computer (host.docker.internal), anche su Linux
+      - "host.docker.internal:host-gateway"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8001/health', timeout=3)"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  mysql:
+    image: mysql:8.4
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: presto
+      MYSQL_USER: presto
+      MYSQL_PASSWORD: presto
+      MYSQL_RANDOM_ROOT_PASSWORD: "yes"
+    volumes:
+      - mysql:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-upresto", "-ppresto", "--silent"]
+      interval: 3s
+      timeout: 5s
+      retries: 30
+
+  ollama:
+    image: ollama/ollama:0.40.16
+    profiles: ["ai"]
+    restart: unless-stopped
+    volumes:
+      - ollama:/root/.ollama
+
+  # Scarica il modello della chat una volta sola (resta nel volume "ollama")
+  ollama-pull:
+    image: ollama/ollama:0.40.16
+    profiles: ["ai"]
+    environment:
+      OLLAMA_HOST: http://ollama:11434
+    entrypoint: ["ollama", "pull", "qwen2.5:3b"]
+    depends_on:
+      - ollama
+    restart: "no"
+
+volumes:
+  storage:
+  mysql:
+  ollama:
