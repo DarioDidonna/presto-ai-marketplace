@@ -1,0 +1,61 @@
+# Aggiornamenti automatici delle dipendenze. Le correzioni di sicurezza arrivano subito (impostazione del
+# repository); qui gli aggiornamenti ordinari, una volta a settimana e raggruppati: una PR per ecosistema con
+# minor e patch, le major a parte perché possono rompere qualcosa. Ogni PR passa dalla CI come le altre.
+version: 2
+
+updates:
+  - package-ecosystem: composer
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    groups:
+      composer:
+        update-types: [minor, patch]
+
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    groups:
+      npm:
+        update-types: [minor, patch]
+
+  - package-ecosystem: uv
+    directory: /ai-agent
+    schedule:
+      interval: weekly
+      day: monday
+    groups:
+      python:
+        update-types: [minor, patch]
+
+  # Azioni fissate per commit (SHA): Dependabot aggiorna SHA e commento della versione
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    groups:
+      actions:
+        update-types: [minor, patch]
+
+  # Immagini di base dei Dockerfile e di compose.yaml (MySQL, Ollama)
+  - package-ecosystem: docker
+    directories: [/, /ai-agent]
+    schedule:
+      interval: weekly
+      day: monday
+    groups:
+      docker:
+        update-types: [minor, patch]
+
+  - package-ecosystem: docker-compose
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    groups:
+      compose:
+        update-types: [minor, patch]

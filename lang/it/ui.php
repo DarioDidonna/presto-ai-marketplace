@@ -173,7 +173,7 @@ return [
     'validation_description_max' => 'La descrizione può contenere al massimo 5000 caratteri.',
     'validation_category_required' => 'Selezionare una categoria è obbligatorio.',
     'validation_category_exists' => 'La categoria selezionata non è valida.',
-    'validation_image_image' => 'Il file deve essere un\'immagine (jpg, png, gif, webp).',
+    'validation_image_image' => 'Il file deve essere un\'immagine (jpg, png, webp).',
     'validation_image_max' => 'Ogni immagine può pesare al massimo 5 MB.',
     'validation_images_max_count' => 'Puoi caricare al massimo :max immagini.',
     'show_password' => 'Mostra o nascondi la password',

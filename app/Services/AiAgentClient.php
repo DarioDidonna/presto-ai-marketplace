@@ -204,6 +204,8 @@ class AiAgentClient
         return Http::baseUrl(config('services.ai_agent.url'))
             ->withToken(config('services.ai_agent.token'))
             ->acceptJson()
+            // Servizio spento o irraggiungibile: errore in 2 secondi, senza tenere ferma la pagina
+            ->connectTimeout(2)
             // Un modello locale piccolo risponde in pochi secondi, ma la prima richiesta deve caricarlo in memoria
             ->timeout(60);
     }

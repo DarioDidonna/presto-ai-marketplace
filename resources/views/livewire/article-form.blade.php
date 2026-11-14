@@ -87,7 +87,7 @@
             <div class="mb-3">
                 <label for="temporary_images"
                     class="form-label text-uppercase tracking-wide fs-8 fw-semibold text-neon-cyan">{{ __('ui.images_label') }}</label>
-                <input type="file" id="temporary_images" name="images" wire:model="temporary_images" multiple accept="image/*"
+                <input type="file" id="temporary_images" name="images" wire:model="temporary_images" multiple accept="image/jpeg,image/png,image/webp"
                     class="form-control shadow @error('temporary_images.*') is-invalid @enderror @error('temporary_images') is-invalid @enderror">
 
                 <div wire:loading wire:target="temporary_images" class="text-neon-cyan fs-8 font-monospace mt-2" role="status">

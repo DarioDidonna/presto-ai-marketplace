@@ -37,7 +37,7 @@ trait HandlesArticleForm
     {
         return [
             'images' => 'array|max:'.$this->maxNewImages(),
-            'images.*' => 'image|mimes:jpg,jpeg,png,gif,webp|max:5120',
+            'images.*' => 'image|mimes:jpg,jpeg,png,webp|max:5120',
         ];
     }
 
@@ -82,7 +82,7 @@ trait HandlesArticleForm
         try {
             $this->validate([
                 'temporary_images' => 'array|max:'.($this->maxNewImages() - count($this->images)),
-                'temporary_images.*' => 'image|mimes:jpg,jpeg,png,gif,webp|max:5120',
+                'temporary_images.*' => 'image|mimes:jpg,jpeg,png,webp|max:5120',
             ]);
         } catch (ValidationException $e) {
             // I file scartati non devono restare in coda: si sommerebbero al caricamento successivo

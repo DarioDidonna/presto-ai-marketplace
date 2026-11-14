@@ -52,6 +52,16 @@ class CreateArticleFormTest extends TestCase
             ->assertHasErrors(['temporary_images.0' => 'image']);
     }
 
+    public function test_gif_is_rejected_like_for_the_avatar(): void
+    {
+        // Il rilevatore dei volti non legge i GIF: accettarli voleva dire foto mai controllate
+        Livewire::actingAs(User::factory()->create())
+            ->test(CreateArticleForm::class)
+            ->set('temporary_images', [UploadedFile::fake()->image('animazione.gif')])
+            ->assertHasErrors(['temporary_images.0' => 'mimes'])
+            ->assertCount('images', 0);
+    }
+
     public function test_valid_article_is_stored_and_messages_are_translated(): void
     {
         Queue::fake();
