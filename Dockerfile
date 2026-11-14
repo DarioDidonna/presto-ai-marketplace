@@ -2,7 +2,7 @@
 # Pensata per provare il progetto in locale (APP_ENV=local, dati demo), non per la produzione.
 
 # 1. Front-end: build di Vite (CSS, JS, icone). Le variabili di Reverb finiscono nel JS del browser.
-FROM node:22-bookworm-slim AS assets
+FROM node:25-bookworm-slim AS assets
 WORKDIR /app
 COPY package.json package-lock.json .npmrc ./
 RUN npm ci
