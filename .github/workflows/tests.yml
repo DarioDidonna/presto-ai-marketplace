@@ -201,7 +201,7 @@ jobs:
       - name: Il sito risponde con gli annunci demo
         run: |
           curl -fsS http://localhost:8000/up -o /dev/null
-          curl -fsS http://localhost:8000/article/index | grep -q '/storage/articles/'
+          curl -fsS http://localhost:8000/annunci | grep -q '/storage/articles/'
 
       - name: L'agente controlla i volti di tutte le foto demo
         run: |

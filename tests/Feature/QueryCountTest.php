@@ -39,12 +39,12 @@ class QueryCountTest extends TestCase
     {
         return [
             'homepage' => ['/'],
-            'indice' => ['/article/index'],
+            'indice' => ['/annunci'],
             // ID letti dai modelli creati: su MySQL i contatori non ripartono da 1 a ogni test
-            'categoria' => ['/category/{category}'],
-            'ricerca' => ['/article/index?query=Articolo&min_price=1&sort=price_desc'],
-            'dettaglio' => ['/show/article/{article}'],
-            'revisore' => ['/revisor/index'],
+            'categoria' => ['/categorie/{category}'],
+            'ricerca' => ['/annunci?query=Articolo&min_price=1&sort=price_desc'],
+            'dettaglio' => ['/annunci/{article}'],
+            'revisore' => ['/revisore'],
         ];
     }
 

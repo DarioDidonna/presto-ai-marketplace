@@ -76,7 +76,7 @@ class FooterStatusTest extends TestCase
 
         $html = $this->get('/')->getContent(); // prima la pagina: imposta la lingua usata da __()
         $this->assertSame(__('ui.footer_value_off'), $this->value($html, 'faces'));
-        $this->get('/article/index');
+        $this->get('/annunci');
 
         $this->assertSame(1, $calls); // il secondo caricamento usa la cache: il footer non rallenta le pagine
     }

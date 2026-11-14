@@ -10,8 +10,6 @@ use App\Models\Review;
 use App\Services\AccountEraser;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Routing\Controllers\HasMiddleware;
-use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -19,16 +17,9 @@ use Spatie\Image\Enums\Fit;
 use Spatie\Image\Enums\ImageDriver;
 use Spatie\Image\Image;
 
-class ProfileController extends Controller implements HasMiddleware
+class ProfileController extends Controller
 {
     public const AVATAR_SIZE = 256;
-
-    public static function middleware(): array
-    {
-        return [
-            new Middleware('auth'),
-        ];
-    }
 
     public function show(Request $request)
     {

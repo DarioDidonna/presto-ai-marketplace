@@ -155,7 +155,7 @@ class ReviewTest extends TestCase
             ->assertSee('Gentilissima, tutto perfetto')
             ->assertDontSee('giulia@example.com');
 
-        $this->get('/venditore/999999')->assertNotFound();
+        $this->get('/venditori/999999')->assertNotFound();
     }
 
     public function test_seller_without_ads_or_reviews(): void

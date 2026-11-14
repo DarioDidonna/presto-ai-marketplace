@@ -22,7 +22,7 @@ class SearchArticlesTest extends TestCase
         Article::factory()->rejected()->create(['title' => 'Moto d\'epoca perfetta', 'description' => 'Descrizione da non mostrare']);
         Article::factory()->create(['title' => 'Moto in revisione', 'description' => 'Descrizione in attesa']);
 
-        $response = $this->get('/article/index?query=Moto');
+        $response = $this->get('/annunci?query=Moto');
 
         $response->assertOk();
         $response->assertViewHas('articles', fn ($articles) => $articles->total() === 1);
@@ -45,11 +45,11 @@ class SearchArticlesTest extends TestCase
         Article::factory()->accepted()->for($sport)->create(['title' => 'Bici costosa', 'price' => 2000]);
         Article::factory()->accepted()->create(['title' => 'Divano', 'price' => 300]);
 
-        $this->assertEqualsCanonicalizing(['Bici economica', 'Bici media', 'Bici costosa'], $this->titles("/article/index?category={$sport->id}"));
-        $this->assertEqualsCanonicalizing(['Bici media', 'Divano'], $this->titles('/article/index?min_price=100&max_price=500'));
-        $this->assertSame(['Bici media'], $this->titles("/article/index?category={$sport->id}&min_price=100&max_price=500"));
+        $this->assertEqualsCanonicalizing(['Bici economica', 'Bici media', 'Bici costosa'], $this->titles("/annunci?category={$sport->id}"));
+        $this->assertEqualsCanonicalizing(['Bici media', 'Divano'], $this->titles('/annunci?min_price=100&max_price=500'));
+        $this->assertSame(['Bici media'], $this->titles("/annunci?category={$sport->id}&min_price=100&max_price=500"));
         // Prezzo con la virgola decimale e minimo/massimo invertiti
-        $this->assertEqualsCanonicalizing(['Bici media', 'Divano'], $this->titles('/article/index?min_price=500&max_price=99,90'));
+        $this->assertEqualsCanonicalizing(['Bici media', 'Divano'], $this->titles('/annunci?min_price=500&max_price=99,90'));
     }
 
     public function test_text_search_combines_with_filters(): void
@@ -59,7 +59,7 @@ class SearchArticlesTest extends TestCase
         Article::factory()->accepted()->for($sport)->create(['title' => 'Bici da bambino', 'price' => 60]);
         Article::factory()->accepted()->create(['title' => 'Bici elettrica', 'price' => 900]);
 
-        $this->assertSame(['Bici da corsa'], $this->titles("/article/index?query=bici&category={$sport->id}&min_price=100"));
+        $this->assertSame(['Bici da corsa'], $this->titles("/annunci?query=bici&category={$sport->id}&min_price=100"));
     }
 
     public function test_sorting_options(): void
@@ -68,18 +68,18 @@ class SearchArticlesTest extends TestCase
         Article::factory()->accepted()->create(['title' => 'Cara', 'price' => 90, 'created_at' => now()->subDays(3)]);
         Article::factory()->accepted()->create(['title' => 'Economica', 'price' => 10, 'created_at' => now()->subDays(2)]);
 
-        $this->assertSame(['Media', 'Economica', 'Cara'], $this->titles('/article/index'));
-        $this->assertSame(['Economica', 'Media', 'Cara'], $this->titles('/article/index?sort=price_asc'));
-        $this->assertSame(['Cara', 'Media', 'Economica'], $this->titles('/article/index?sort=price_desc'));
+        $this->assertSame(['Media', 'Economica', 'Cara'], $this->titles('/annunci'));
+        $this->assertSame(['Economica', 'Media', 'Cara'], $this->titles('/annunci?sort=price_asc'));
+        $this->assertSame(['Cara', 'Media', 'Economica'], $this->titles('/annunci?sort=price_desc'));
     }
 
     public function test_relevance_is_the_default_order_when_searching(): void
     {
         Article::factory()->accepted()->create(['title' => 'Lampada']);
 
-        $this->get('/article/index?query=lampada')->assertViewHas('filters', fn ($f) => $f->sort === 'relevance');
+        $this->get('/annunci?query=lampada')->assertViewHas('filters', fn ($f) => $f->sort === 'relevance');
         // Senza testo la pertinenza non ha senso: si torna ai più recenti
-        $this->get('/article/index?sort=relevance')->assertViewHas('filters', fn ($f) => $f->sort === 'newest');
+        $this->get('/annunci?sort=relevance')->assertViewHas('filters', fn ($f) => $f->sort === 'newest');
     }
 
     public function test_invalid_parameters_are_ignored_without_errors(): void
@@ -87,13 +87,13 @@ class SearchArticlesTest extends TestCase
         Article::factory()->count(2)->accepted()->create();
 
         foreach ([
-            '/article/index?query[]=x',
-            '/article/index?query=%20%20',
-            '/article/index?category=999',
-            '/article/index?category=abc',
-            '/article/index?min_price=-5&max_price=ciao',
-            '/article/index?sort=DROP%20TABLE',
-            '/article/index?min_price[]=1',
+            '/annunci?query[]=x',
+            '/annunci?query=%20%20',
+            '/annunci?category=999',
+            '/annunci?category=abc',
+            '/annunci?min_price=-5&max_price=ciao',
+            '/annunci?sort=DROP%20TABLE',
+            '/annunci?min_price[]=1',
         ] as $url) {
             $this->get($url)->assertOk()->assertViewHas('articles', fn ($a) => $a->total() === 2);
         }
@@ -103,14 +103,14 @@ class SearchArticlesTest extends TestCase
     {
         $category = Category::factory()->create();
 
-        $this->get("/article/index?query=bici&category={$category->id}&min_price=10&sort=price_desc")
+        $this->get("/annunci?query=bici&category={$category->id}&min_price=10&sort=price_desc")
             ->assertSee('value="bici"', false)
             ->assertSee('<option value="'.$category->id.'" selected>', false)
             ->assertSee('value="10"', false)
             ->assertSee('<option value="price_desc" selected>', false)
             ->assertSee(__('ui.reset_filters'));
 
-        $this->get('/article/index')->assertDontSee(__('ui.reset_filters'));
+        $this->get('/annunci')->assertDontSee(__('ui.reset_filters'));
     }
 
     public function test_partial_words_in_the_title_are_found(): void
@@ -118,8 +118,8 @@ class SearchArticlesTest extends TestCase
         Article::factory()->accepted()->create(['title' => 'Bicicletta da corsa', 'description' => 'Telaio in alluminio']);
         Article::factory()->accepted()->create(['title' => 'Smartphone 128 GB', 'description' => 'Come nuovo']);
 
-        $this->assertSame(['Bicicletta da corsa'], $this->titles('/article/index?query=bici'));
-        $this->assertSame(['Smartphone 128 GB'], $this->titles('/article/index?query=smart'));
+        $this->assertSame(['Bicicletta da corsa'], $this->titles('/annunci?query=bici'));
+        $this->assertSame(['Smartphone 128 GB'], $this->titles('/annunci?query=smart'));
     }
 
     public function test_symbol_only_search_shows_everything(): void
@@ -127,7 +127,7 @@ class SearchArticlesTest extends TestCase
         Article::factory()->count(3)->accepted()->create();
 
         foreach (['%', '_', '%%%'] as $symbols) {
-            $this->get('/article/index?query='.urlencode($symbols))
+            $this->get('/annunci?query='.urlencode($symbols))
                 ->assertOk()
                 ->assertViewHas('articles', fn ($a) => $a->total() === 3)
                 ->assertViewHas('filters', fn ($f) => $f->query === null);
@@ -141,8 +141,8 @@ class SearchArticlesTest extends TestCase
         Article::factory()->accepted()->create(['title' => 'Bici da bambino', 'description' => 'Con rotelle']);
 
         // "da" compare in tutti i titoli: prima restituiva l'intero catalogo
-        $this->assertSame(['Bicicletta da corsa'], $this->titles('/article/index?query=bici%20da%20corsa'));
-        $this->assertSame([], $this->titles('/article/index?query=da'));
+        $this->assertSame(['Bicicletta da corsa'], $this->titles('/annunci?query=bici%20da%20corsa'));
+        $this->assertSame([], $this->titles('/annunci?query=da'));
     }
 
     public function test_falls_back_to_partial_matches_when_no_ad_has_every_word(): void
@@ -150,6 +150,6 @@ class SearchArticlesTest extends TestCase
         Article::factory()->accepted()->create(['title' => 'Cuccia per cani', 'description' => 'Taglia media']);
         Article::factory()->accepted()->create(['title' => 'Divano letto', 'description' => 'Tre posti']);
 
-        $this->assertSame(['Cuccia per cani'], $this->titles('/article/index?query=oggetti%20per%20cani'));
+        $this->assertSame(['Cuccia per cani'], $this->titles('/annunci?query=oggetti%20per%20cani'));
     }
 }

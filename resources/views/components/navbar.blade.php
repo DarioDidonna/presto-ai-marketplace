@@ -29,7 +29,7 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link nav-link-custom text-white hover-neon transition-all px-2 {{ request()->routeIs('article.index', 'article.search') ? 'active' : '' }}"
+                    <a class="nav-link nav-link-custom text-white hover-neon transition-all px-2 {{ request()->routeIs('article.index') ? 'active' : '' }}"
                         href="{{ route('article.index') }}" @if (request()->routeIs('article.index')) aria-current="page" @endif>
                         <i class="bi text-neon-cyan bi-grid me-1"></i> {{ __('ui.announcements') }}
                     </a>

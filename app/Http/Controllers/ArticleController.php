@@ -6,19 +6,10 @@ use App\Models\Article;
 use App\Models\Category;
 use App\Support\ArticleFilters;
 use Illuminate\Http\Request;
-use Illuminate\Routing\Controllers\HasMiddleware;
-use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\Gate;
 
-class ArticleController extends Controller implements HasMiddleware
+class ArticleController extends Controller
 {
-    public static function middleware(): array
-    {
-        return [
-            new Middleware(['auth', 'verified'], only: ['create']),
-        ];
-    }
-
     public function create()
     {
         return view('article.create');

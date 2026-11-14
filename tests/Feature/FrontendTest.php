@@ -18,10 +18,10 @@ class FrontendTest extends TestCase
     {
         Article::factory()->count(13)->accepted()->create(['title' => 'Chitarra elettrica']);
 
-        $response = $this->get('/article/index?query=Chitarra&sort=price_asc')->assertOk();
+        $response = $this->get('/annunci?query=Chitarra&sort=price_asc')->assertOk();
 
         $response->assertSee('query=Chitarra&amp;sort=price_asc&amp;page=2', false);
-        $this->get('/article/index?query=Chitarra&sort=price_asc&page=2')->assertOk()->assertViewHas('articles', fn ($a) => $a->count() === 1);
+        $this->get('/annunci?query=Chitarra&sort=price_asc&page=2')->assertOk()->assertViewHas('articles', fn ($a) => $a->count() === 1);
     }
 
     public function test_password_toggle_buttons_use_data_attribute(): void
@@ -48,7 +48,7 @@ class FrontendTest extends TestCase
         $user = User::factory()->revisor()->create();
         $article = Article::factory()->accepted()->create();
 
-        foreach (['/', '/article/index', "/show/article/{$article->id}", '/login', '/register'] as $url) {
+        foreach (['/', '/annunci', "/annunci/{$article->id}", '/login', '/register'] as $url) {
             $html = $this->actingAs($user)->get($url)->getContent();
             preg_match_all('/<a\b[^>]*href="#"[^>]*>/', $html, $links);
             foreach ($links[0] as $link) {
@@ -61,7 +61,7 @@ class FrontendTest extends TestCase
     {
         $article = Article::factory()->accepted()->create(['description' => "Riga uno\nRiga due"]);
 
-        foreach (['/', "/show/article/{$article->id}", '/login'] as $url) {
+        foreach (['/', "/annunci/{$article->id}", '/login'] as $url) {
             $html = $this->get($url)->getContent();
             foreach (['div', 'span', 'a', 'ul', 'li', 'section', 'footer', 'nav', 'form'] as $tag) {
                 $this->assertSame(
@@ -123,7 +123,7 @@ class FrontendTest extends TestCase
     {
         $article = Article::factory()->accepted()->create();
 
-        foreach (['/', '/article/index', "/show/article/{$article->id}"] as $url) {
+        foreach (['/', '/annunci', "/annunci/{$article->id}"] as $url) {
             $this->get($url)->assertDontSee('picsum.photos', false)->assertSee('media/placeholder.svg', false);
         }
     }
@@ -171,7 +171,7 @@ class FrontendTest extends TestCase
     {
         Article::factory()->accepted()->create(['title' => 'Lampada vintage']);
 
-        $this->get('/article/index?query=Lampada')
+        $this->get('/annunci?query=Lampada')
             ->assertOk()
             ->assertDontSee('bg-light', false)
             ->assertDontSee('bg-white', false)
@@ -180,9 +180,9 @@ class FrontendTest extends TestCase
 
     public function test_navbar_highlights_current_section(): void
     {
-        $this->get('/article/index')->assertSee('aria-current="page"', false);
-        $html = $this->get('/article/index')->getContent();
-        $this->assertMatchesRegularExpression('/nav-link-custom[^"]*\bactive\b[^"]*"\s+href="[^"]*\/article\/index"/', $html);
+        $this->get('/annunci')->assertSee('aria-current="page"', false);
+        $html = $this->get('/annunci')->getContent();
+        $this->assertMatchesRegularExpression('/nav-link-custom[^"]*\bactive\b[^"]*"\s+href="[^"]*\/annunci"/', $html);
     }
 
     public function test_display_url_falls_back_when_large_version_is_missing(): void
@@ -257,7 +257,7 @@ class FrontendTest extends TestCase
         $article = Article::factory()->accepted()->create(['title' => 'Divano letto', 'description' => 'Comodo divano in tessuto grigio']);
 
         $this->get('/')->assertSee('<title>Presto.it - '.__('ui.meta_tagline').'</title>', false);
-        $this->get('/article/index')->assertSee('<title>'.__('ui.all_ads_title').' · Presto.it</title>', false);
+        $this->get('/annunci')->assertSee('<title>'.__('ui.all_ads_title').' · Presto.it</title>', false);
         $this->get(route('article.show', $article))
             ->assertSee('<title>Divano letto · Presto.it</title>', false)
             ->assertSee('<meta name="description" content="Comodo divano in tessuto grigio">', false);
@@ -269,7 +269,7 @@ class FrontendTest extends TestCase
         $article = Article::factory()->accepted()->create();
         $this->withSession(['locale' => 'en']);
 
-        foreach (['/', "/show/article/{$article->id}"] as $url) {
+        foreach (['/', "/annunci/{$article->id}"] as $url) {
             $this->get($url)->assertOk()
                 ->assertDontSee('Esplora')
                 ->assertDontSee('Elaborazione')
@@ -299,7 +299,7 @@ class FrontendTest extends TestCase
     public function test_card_images_are_lazy_loaded(): void
     {
         Article::factory()->accepted()->create();
-        $this->get('/article/index')->assertSee('loading="lazy"', false);
+        $this->get('/annunci')->assertSee('loading="lazy"', false);
     }
 
     public function test_site_styles_are_loaded_after_bootstrap_and_font_awesome_is_gone(): void

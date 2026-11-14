@@ -16,7 +16,7 @@ class ExampleTest extends TestCase
         $category = Category::factory()->create();
         $article = Article::factory()->accepted()->for($category)->create();
 
-        foreach (['/', '/article/index', "/category/{$category->id}", "/show/article/{$article->id}", '/login', '/register'] as $url) {
+        foreach (['/', '/annunci', "/categorie/{$category->id}", "/annunci/{$article->id}", '/login', '/register'] as $url) {
             $this->get($url)->assertOk();
         }
     }
@@ -28,7 +28,7 @@ class ExampleTest extends TestCase
 
     public function test_missing_records_return_404(): void
     {
-        $this->get('/show/article/999')->assertNotFound();
-        $this->get('/category/999')->assertNotFound();
+        $this->get('/annunci/999')->assertNotFound();
+        $this->get('/categorie/999')->assertNotFound();
     }
 }

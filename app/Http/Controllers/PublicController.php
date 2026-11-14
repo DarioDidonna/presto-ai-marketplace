@@ -15,10 +15,6 @@ class PublicController extends Controller
     }
 
     // Vecchio indirizzo della ricerca: la ricerca ora vive nell'elenco annunci, insieme ai filtri
-    public function searchArticles(Request $request)
-    {
-        return redirect()->route('article.index', $request->query());
-    }
 
     public function setLanguage(Request $request, string $lang)
     {
