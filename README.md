@@ -1,6 +1,6 @@
 # Presto.it
 
-![PHP](https://img.shields.io/badge/PHP-8.2%2B-777BB4?logo=php&logoColor=white)
+![PHP](https://img.shields.io/badge/PHP-8.4%2B-777BB4?logo=php&logoColor=white)
 ![Laravel](https://img.shields.io/badge/Laravel-13-FF2D20?logo=laravel&logoColor=white)
 ![Livewire](https://img.shields.io/badge/Livewire-4-FB70A9?logo=livewire&logoColor=white)
 ![Bootstrap](https://img.shields.io/badge/Bootstrap-5.3-7952B3?logo=bootstrap&logoColor=white)
@@ -18,7 +18,7 @@ Progetto finale del corso Hackademy (Aulab), ampliato con refactoring, test auto
 > **Python AI agent (LangChain/LangGraph + FastAPI)** running a **local model on Ollama** (no API keys, works offline):
 > a shopping assistant that answers with real listings, an AI opinion for human moderators, and a draft listing written
 > from a photo with a vision model, plus local face blurring (OpenCV) on every uploaded photo. It also has a cart with purchase requests, real-time buyer–seller messaging
-> (Laravel Reverb), seller reviews, three UI languages and 253 + 125 automated tests, static analysis with Larastan running on GitHub Actions.
+> (Laravel Reverb), seller reviews, three UI languages and 290 + 127 automated tests, static analysis with Larastan running on GitHub Actions.
 > Every AI feature is measured with repeatable evals and guarded by deterministic checks in code.
 
 <p align="center">
@@ -132,19 +132,19 @@ flowchart LR
 
 | Ambito | Strumenti |
 |---|---|
-| Backend | PHP 8.2+, Laravel 13, Laravel Fortify, Laravel Scout + TNTSearch |
+| Backend | PHP 8.4+, Laravel 13, Laravel Fortify, Laravel Scout + TNTSearch |
 | Frontend | Blade, Livewire 4, Bootstrap 5.3, Bootstrap Icons, Vite (nessuna dipendenza da CDN) |
 | Tempo reale | Laravel Reverb (WebSocket), Laravel Echo |
 | Immagini | Rilevamento volti in locale (OpenCV YuNet), Spatie Image (GD) |
 | Agente AI | Python 3.12 (uv), FastAPI, LangChain + LangGraph, Ollama con `qwen2.5:3b` (testo) e `qwen2.5vl:3b` (visione, facoltativo) in locale |
 | Dati | MySQL, code e sessioni su database |
-| Test e qualità | PHPUnit (253 test), pytest (125 test), Larastan (PHPStan livello 5), Laravel Pint, ruff, GitHub Actions |
+| Test e qualità | PHPUnit (290 test), pytest (127 test), Larastan (PHPStan livello 5), Laravel Pint, ruff, GitHub Actions |
 
 ---
 
 ## Installazione
 
-**Requisiti:** PHP 8.2+ con estensione GD, Composer, Node.js 20.19+ (o 22.12+), MySQL.
+**Requisiti:** PHP 8.4+ con estensione GD, Composer, Node.js 20.19+ (o 22.12+), MySQL.
 
 ```bash
 git clone git@github.com:DarioDidonna/presto-ai-marketplace.git
@@ -243,7 +243,7 @@ Parti da `.env.production.example` (copialo in `.env` sul server e compila i val
 php artisan test
 ```
 
-I 253 test Laravel coprono, tra l'altro:
+I 290 test Laravel coprono, tra l'altro:
 
 - **sicurezza e permessi**: solo i revisori approvano, link di promozione firmati e a scadenza, annunci non pubblicati invisibili agli altri utenti, modifica ed eliminazione riservate all'autore;
 - **flussi completi**: ricerca e filtri, pubblicazione, revisione con email all'autore e annullamento, reset password, profilo e foto profilo, catena di elaborazione delle immagini, oscuramento dei volti (riquadri, tentativi con il servizio spento, tutte le 8 orientazioni EXIF);
@@ -257,7 +257,7 @@ I 253 test Laravel coprono, tra l'altro:
 
 I test usano un database SQLite in memoria e il driver Scout `collection`: non toccano il database né l'indice di ricerca di sviluppo.
 
-L'agente Python ha 125 test propri (`cd ai-agent && uv run pytest`) con un modello e un Laravel finti: tool, difese contro il prompt injection, memoria della conversazione, regole di moderazione, endpoint e autenticazione.
+L'agente Python ha 127 test propri (`cd ai-agent && uv run pytest`) con un modello e un Laravel finti: tool, difese contro il prompt injection, memoria della conversazione, regole di moderazione, endpoint e autenticazione.
 
 A ogni push e pull request **GitHub Actions** esegue le due suite (quella Laravel con il build del front-end), l'**analisi statica** con [Larastan](https://github.com/larastan/larastan) e controlla lo stile del codice con [Laravel Pint](https://laravel.com/docs/pint) e [ruff](https://docs.astral.sh/ruff/): vedi [`.github/workflows/tests.yml`](.github/workflows/tests.yml). In locale: `composer analyse`, `vendor/bin/pint` e `cd ai-agent && uv run ruff format .`.
 
