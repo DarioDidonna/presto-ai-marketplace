@@ -138,11 +138,46 @@ flowchart LR
 | Immagini | Rilevamento volti in locale (OpenCV YuNet), Spatie Image (GD) |
 | Agente AI | Python 3.12 (uv), FastAPI, LangChain + LangGraph, Ollama con `qwen2.5:3b` (testo) e `qwen2.5vl:3b` (visione, facoltativo) in locale |
 | Dati | MySQL, code e sessioni su database |
+| Avvio | Docker Compose (sito, coda, Reverb, MySQL, agente, Ollama facoltativo) |
 | Test e qualità | PHPUnit (290 test), pytest (127 test), Larastan (PHPStan livello 5), Laravel Pint, ruff, GitHub Actions |
 
 ---
 
-## Installazione
+## Avvio rapido con Docker
+
+Serve solo [Docker](https://www.docker.com/products/docker-desktop/): niente PHP, MySQL, Node o Python da installare.
+
+```bash
+git clone https://github.com/DarioDidonna/presto-ai-marketplace.git
+cd presto-ai-marketplace
+docker compose up --build
+```
+
+Al primo avvio (qualche minuto per la build) si creano database e dati demo, e l'agente oscura i volti nelle foto. Il sito è su [http://localhost:8000](http://localhost:8000): entra con gli [account demo](#account-demo).
+
+Partono sei servizi: sito, coda, Reverb (messaggi in tempo reale), MySQL, agente Python e, se richiesto, Ollama. Le porte sono aperte solo su questo computer.
+
+**Assistente AI e "Compila con l'AI"** usano un modello locale con Ollama. Due modi:
+
+```bash
+# Ollama già installato sul computer (consigliato su Mac: usa la GPU)
+OLLAMA_URL=http://host.docker.internal:11434 docker compose up --build
+
+# Oppure Ollama in un container (solo CPU): al primo avvio scarica qwen2.5:3b (~2 GB)
+docker compose --profile ai up --build
+```
+
+Senza Ollama tutto il resto funziona, oscuramento dei volti compreso.
+
+| Comando | Cosa fa |
+|---|---|
+| `docker compose down` | Ferma tutto, i dati restano |
+| `docker compose down -v` | Ferma tutto e cancella database, foto e indice (al prossimo avvio si riparte dai dati demo) |
+| `docker compose logs -f app queue` | Log del sito e della coda |
+
+L'ambiente Docker serve a provare il progetto in locale (dati demo, `APP_ENV=local`), non è pensato per la produzione. Ogni push lo costruisce e lo avvia anche su GitHub Actions.
+
+## Installazione manuale
 
 **Requisiti:** PHP 8.4+ con estensione GD, Composer, Node.js 20.19+ (o 22.12+), MySQL.
 
@@ -259,7 +294,7 @@ I test usano un database SQLite in memoria e il driver Scout `collection`: non t
 
 L'agente Python ha 127 test propri (`cd ai-agent && uv run pytest`) con un modello e un Laravel finti: tool, difese contro il prompt injection, memoria della conversazione, regole di moderazione, endpoint e autenticazione.
 
-A ogni push e pull request **GitHub Actions** esegue le due suite (quella Laravel con il build del front-end), l'**analisi statica** con [Larastan](https://github.com/larastan/larastan) e controlla lo stile del codice con [Laravel Pint](https://laravel.com/docs/pint) e [ruff](https://docs.astral.sh/ruff/): vedi [`.github/workflows/tests.yml`](.github/workflows/tests.yml). In locale: `composer analyse`, `vendor/bin/pint` e `cd ai-agent && uv run ruff format .`.
+A ogni push e pull request **GitHub Actions** esegue le due suite (quella Laravel con il build del front-end), l'**analisi statica** con [Larastan](https://github.com/larastan/larastan) controlla lo stile del codice con [Laravel Pint](https://laravel.com/docs/pint) e [ruff](https://docs.astral.sh/ruff/), cerca vulnerabilità note nelle dipendenze (Composer, npm, Python) e avvia l'ambiente Docker verificando che il sito risponda e che l'agente controlli i volti delle foto demo: vedi [`.github/workflows/tests.yml`](.github/workflows/tests.yml). In locale: `composer analyse`, `vendor/bin/pint` e `cd ai-agent && uv run ruff format .`.
 
 **Analisi statica.** Larastan (PHPStan per Laravel) al livello 5, configurato in [`phpstan.neon`](phpstan.neon), su `app`, `routes` e `database`: zero errori, senza baseline né soppressioni. Introdurlo ha richiesto di dichiarare i tipi delle relazioni Eloquent (`BelongsTo<User, $this>`) e ha trovato un bug vero: il prezzo era un `float` a **precisione singola** (`float('price', 8, 2)`, dove dal Laravel 11 il terzo argomento è ignorato), quindi 999.999,99 €, il massimo ammesso dal modulo, veniva salvato come 1.000.000 €. Ora è `decimal(10,2)`, con un test.
 
@@ -290,6 +325,7 @@ lang/{it,en,es}/             Traduzioni dell'interfaccia e della validazione
 routes/api.php               API interne per l'agente (/api/agent/*)
 routes/channels.php          Canali privati di Reverb (conversazioni, utente)
 tests/Feature/               Test di funzionalità
+docker/                      Avvio dei container (APP_KEY, migrazioni, dati demo) per compose.yaml
 ai-agent/                    Servizio Python dell'agente AI
 ├── src/presto_ai_agent/     app (FastAPI), agent (LangGraph), tools, guardrails, review, laravel_client
 ├── tests/                   pytest con modello e Laravel finti
