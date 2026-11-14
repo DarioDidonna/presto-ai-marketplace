@@ -6,6 +6,7 @@ use App\Models\Image;
 use App\Services\AgentUnavailableException;
 use App\Services\AiAgentClient;
 use App\Support\PhotoMetadata;
+use Closure;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Storage;
@@ -43,6 +44,15 @@ class RemoveFaces implements ShouldQueue
             return;
         }
 
+        // Il rilevatore legge solo JPEG, PNG e WebP: un altro formato (un GIF caricato in passato) resta "non controllato"
+        // e il revisore lo vede, invece di ritentare quattro volte un errore che non può risolversi
+        $save = $this->writerFor($path);
+        if (! $save) {
+            logger()->warning("RemoveFaces [{$this->imageId}]: formato non supportato dal rilevatore, volti non controllati");
+
+            return;
+        }
+
         $this->straighten($path);
 
         if (! $agent->isEnabled()) {
@@ -64,7 +74,7 @@ class RemoveFaces implements ShouldQueue
             return;
         }
 
-        $image->faces_count = $this->blackOut($path, $result);
+        $image->faces_count = $this->blackOut($path, $save, $result);
         $image->save();
     }
 
@@ -87,15 +97,15 @@ class RemoveFaces implements ShouldQueue
     /**
      * Riempie di nero i riquadri ricevuti (già allargati dal servizio) e salva la foto.
      *
+     * @param  Closure(\GdImage): bool  $save
      * @param  array{width: int, height: int, faces: list<array{x: int, y: int, width: int, height: int}>}  $result
      */
-    private function blackOut(string $path, array $result): int
+    private function blackOut(string $path, Closure $save, array $result): int
     {
         if ($result['faces'] === []) {
             return 0;
         }
 
-        $type = (@getimagesize($path) ?: [])[2] ?? null;
         $gd = @imagecreatefromstring((string) file_get_contents($path));
         if (! $gd) {
             return 0;
@@ -117,12 +127,24 @@ class RemoveFaces implements ShouldQueue
             );
         }
 
-        match ($type) {
-            IMAGETYPE_PNG => imagepng($gd, $path),
-            IMAGETYPE_WEBP => imagewebp($gd, $path, 90),
-            default => imagejpeg($gd, $path, 90),
-        };
+        $save($gd);
 
         return count($result['faces']);
+    }
+
+    /**
+     * Come salvare la foto nel suo stesso formato, solo per quelli che il rilevatore sa leggere: un solo punto decide
+     * entrambe le cose (mai un JPEG salvato con l'estensione di un altro formato).
+     *
+     * @return (Closure(\GdImage): bool)|null
+     */
+    private function writerFor(string $path): ?Closure
+    {
+        return match ((@getimagesize($path) ?: [])[2] ?? null) {
+            IMAGETYPE_JPEG => fn (\GdImage $gd) => imagejpeg($gd, $path, 90),
+            IMAGETYPE_PNG => fn (\GdImage $gd) => imagepng($gd, $path),
+            IMAGETYPE_WEBP => fn (\GdImage $gd) => imagewebp($gd, $path, 90),
+            default => null,
+        };
     }
 }

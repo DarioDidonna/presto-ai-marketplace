@@ -130,6 +130,22 @@ class RemoveFacesTest extends TestCase
         $this->assertNull($image->fresh()->faces_count);
     }
 
+    public function test_a_format_the_detector_cannot_read_is_left_unchecked_without_retrying(): void
+    {
+        Http::fake();
+        $gd = $this->canvas(40, 20);
+        ob_start();
+        imagegif($gd);
+        $image = $this->photo(bytes: ob_get_clean()); // un GIF caricato quando erano ancora ammessi
+        $before = Storage::disk('public')->get('articles/1/foto.jpg');
+
+        $this->process($image)->assertNotReleased();
+
+        Http::assertNothingSent();
+        $this->assertNull($image->fresh()->faces_count); // il revisore lo vede "non controllato"
+        $this->assertSame($before, Storage::disk('public')->get('articles/1/foto.jpg'));
+    }
+
     public function test_without_the_ai_service_configured_nothing_is_called(): void
     {
         config(['services.ai_agent.token' => '']);

@@ -173,7 +173,7 @@ return [
     'validation_description_max' => 'The description may not exceed 5000 characters.',
     'validation_category_required' => 'Please select a category.',
     'validation_category_exists' => 'The selected category is invalid.',
-    'validation_image_image' => 'The file must be an image (jpg, png, gif, webp).',
+    'validation_image_image' => 'The file must be an image (jpg, png, webp).',
     'validation_image_max' => 'Each image may not exceed 5 MB.',
     'validation_images_max_count' => 'You can upload at most :max images.',
     'show_password' => 'Show or hide password',
