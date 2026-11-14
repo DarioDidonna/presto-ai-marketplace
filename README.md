@@ -18,7 +18,7 @@ Progetto finale del corso Hackademy (Aulab), ampliato con refactoring, test auto
 > **Python AI agent (LangChain/LangGraph + FastAPI)** running a **local model on Ollama** (no API keys, works offline):
 > a shopping assistant that answers with real listings, an AI opinion for human moderators, and a draft listing written
 > from a photo with a vision model, plus local face blurring (OpenCV) on every uploaded photo. It also has a cart with purchase requests, real-time buyer–seller messaging
-> (Laravel Reverb), seller reviews, three UI languages and 298 + 127 automated tests, static analysis with Larastan running on GitHub Actions.
+> (Laravel Reverb), seller reviews, three UI languages and 299 + 127 automated tests (over 90% line coverage, enforced in CI), static analysis with Larastan running on GitHub Actions.
 > Every AI feature is measured with repeatable evals and guarded by deterministic checks in code.
 
 <p align="center">
@@ -139,7 +139,7 @@ flowchart LR
 | Agente AI | Python 3.12 (uv), FastAPI, LangChain + LangGraph, Ollama con `qwen2.5:3b` (testo) e `qwen2.5vl:3b` (visione, facoltativo) in locale |
 | Dati | MySQL, code e sessioni su database |
 | Avvio | Docker Compose (sito, coda, Reverb, MySQL, agente, Ollama facoltativo) |
-| Test e qualità | PHPUnit (298 test), pytest (127 test), Larastan (PHPStan livello 5), Laravel Pint, ruff, GitHub Actions |
+| Test e qualità | PHPUnit (299 test), pytest (127 test), copertura sopra il 90% (soglia della CI), Larastan (PHPStan livello 5), Laravel Pint, ruff, GitHub Actions |
 
 ---
 
@@ -278,7 +278,7 @@ Parti da `.env.production.example` (copialo in `.env` sul server e compila i val
 php artisan test
 ```
 
-I 298 test Laravel coprono, tra l'altro:
+I 299 test Laravel coprono, tra l'altro:
 
 - **sicurezza e permessi**: solo i revisori approvano, link di promozione firmati e a scadenza, annunci non pubblicati invisibili agli altri utenti, modifica ed eliminazione riservate all'autore, ogni rotta del sito protetta (login, revisore o link firmato) oppure dichiarata pubblica in un elenco esplicito, vecchi indirizzi reindirizzati con un 301;
 - **flussi completi**: ricerca e filtri, pubblicazione, revisione con email all'autore e annullamento, reset password, profilo e foto profilo, catena di elaborazione delle immagini, oscuramento dei volti (riquadri, tentativi con il servizio spento, tutte le 8 orientazioni EXIF);
@@ -294,7 +294,9 @@ I test usano un database SQLite in memoria e il driver Scout `collection`: non t
 
 L'agente Python ha 127 test propri (`cd ai-agent && uv run pytest`) con un modello e un Laravel finti: tool, difese contro il prompt injection, memoria della conversazione, regole di moderazione, endpoint e autenticazione.
 
-A ogni push e pull request **GitHub Actions** esegue le due suite (quella Laravel con il build del front-end, su SQLite e su MySQL) e l'**analisi statica** con [Larastan](https://github.com/larastan/larastan), controlla lo stile del codice con [Laravel Pint](https://laravel.com/docs/pint) e [ruff](https://docs.astral.sh/ruff/), cerca vulnerabilità note nelle dipendenze (Composer, npm, Python; **Dependabot** apre da solo le PR con le correzioni di sicurezza e, ogni settimana, quelle di aggiornamento) e avvia l'ambiente Docker verificando che il sito risponda e che l'agente controlli i volti delle foto demo: vedi [`.github/workflows/tests.yml`](.github/workflows/tests.yml). In locale: `composer analyse`, `vendor/bin/pint` e `cd ai-agent && uv run ruff format .`.
+**Copertura.** La CI misura la copertura di entrambe le suite (PCOV nel job MySQL, `pytest-cov` per l'agente), mostra la percentuale nel riepilogo di ogni esecuzione e fallisce se le righe coperte scendono sotto il **90%**. In locale: `cd ai-agent && uv run pytest --cov=presto_ai_agent`; per PHP serve PCOV o Xdebug (`php artisan test --coverage`).
+
+A ogni pull request e a ogni push su `main` **GitHub Actions** esegue le due suite (quella Laravel con il build del front-end, su SQLite e su MySQL) e l'**analisi statica** con [Larastan](https://github.com/larastan/larastan), controlla lo stile del codice con [Laravel Pint](https://laravel.com/docs/pint) e [ruff](https://docs.astral.sh/ruff/), cerca vulnerabilità note nelle dipendenze (Composer, npm, Python; **Dependabot** apre da solo le PR con le correzioni di sicurezza e, ogni settimana, quelle di aggiornamento) e avvia l'ambiente Docker verificando che il sito risponda e che l'agente controlli i volti delle foto demo: vedi [`.github/workflows/tests.yml`](.github/workflows/tests.yml). In locale: `composer analyse`, `vendor/bin/pint` e `cd ai-agent && uv run ruff format .`.
 
 **Analisi statica.** Larastan (PHPStan per Laravel) al livello 5, configurato in [`phpstan.neon`](phpstan.neon), su `app`, `routes` e `database`: zero errori, senza baseline né soppressioni. Introdurlo ha richiesto di dichiarare i tipi delle relazioni Eloquent (`BelongsTo<User, $this>`) e ha trovato un bug vero: il prezzo era un `float` a **precisione singola** (`float('price', 8, 2)`, dove dal Laravel 11 il terzo argomento è ignorato), quindi 999.999,99 €, il massimo ammesso dal modulo, veniva salvato come 1.000.000 €. Ora è `decimal(10,2)`, con un test.
 

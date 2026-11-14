@@ -134,6 +134,17 @@ class SalesTest extends TestCase
         Notification::assertSentTo($this->seller, PurchaseRequestCancelled::class);
     }
 
+    public function test_cancellation_email_tells_the_seller_who_and_what(): void
+    {
+        $mail = (new PurchaseRequestCancelled($this->request))->toMail($this->seller);
+
+        $this->assertSame(__('ui.cancel_mail_subject', ['name' => 'Anna']), $mail->subject);
+        $this->assertStringContainsString('Giulia', $mail->greeting);
+        $this->assertStringContainsString('Anna', $mail->introLines[0]);
+        $this->assertStringContainsString('Bici da corsa', $mail->introLines[0]);
+        $this->assertSame(route('sales.index'), $mail->actionUrl);
+    }
+
     public function test_only_the_right_person_can_act(): void
     {
         $stranger = User::factory()->create();

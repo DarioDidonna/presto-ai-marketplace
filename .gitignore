@@ -32,3 +32,5 @@ google_credential*
 # Registrazioni dello schermo (la GIF della demo invece va committata)
 docs/*.mov
 docs/*.mp4
+# Report di copertura generati dai test
+/coverage.txt
