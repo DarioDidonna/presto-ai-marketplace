@@ -16,7 +16,7 @@ ARG VITE_REVERB_SCHEME=http
 RUN npm run build
 
 # 2. PHP 8.4 con le estensioni usate dal progetto (GD per le foto, EXIF per raddrizzarle, MySQL)
-FROM php:8.4-cli-bookworm
+FROM php:8.5-cli-bookworm
 COPY --from=mlocati/php-extension-installer:2 /usr/bin/install-php-extensions /usr/local/bin/
 RUN install-php-extensions pdo_mysql gd exif intl zip bcmath pcntl opcache
 COPY --from=composer:2 /usr/bin/composer /usr/local/bin/composer
