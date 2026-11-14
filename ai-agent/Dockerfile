@@ -1,5 +1,5 @@
 # Agente AI (FastAPI + LangGraph) e rilevatore dei volti (YuNet, incluso nel pacchetto: nessun download)
-FROM ghcr.io/astral-sh/uv:0.13.6-python3.12-trixie-slim
+FROM ghcr.io/astral-sh/uv:0.13.8-python3.12-trixie-slim
 
 WORKDIR /app
 ENV UV_COMPILE_BYTECODE=1 UV_LINK_MODE=copy UV_NO_DEV=1
