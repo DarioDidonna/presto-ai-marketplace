@@ -86,7 +86,7 @@ class SalesTest extends TestCase
         app(PurchaseRequestWorkflow::class)->accept($this->request);
 
         $this->get(route('article.index'))->assertDontSee('Bici da corsa');
-        $this->get('/article/index?query=bici')->assertDontSee('Bici da corsa');
+        $this->get('/annunci?query=bici')->assertDontSee('Bici da corsa');
         $this->get(route('byCategory', $this->bike->category))->assertDontSee('Bici da corsa');
         $this->get('/')->assertDontSee('Bici da corsa');
 

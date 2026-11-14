@@ -63,7 +63,7 @@ class RevisorFlowTest extends TestCase
 
         Mail::assertQueued(BecomeRevisor::class, function (BecomeRevisor $mail) use ($candidate) {
             $html = $mail->render();
-            preg_match('#href="([^"]*/make/revisor/[^"]+)"#', $html, $match);
+            preg_match('#href="([^"]*/revisore/conferma/[^"]+)"#', $html, $match);
             $this->assertNotEmpty($match, 'Link di attivazione non trovato nella mail');
 
             auth()->logout();

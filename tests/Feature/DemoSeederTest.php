@@ -60,10 +60,10 @@ class DemoSeederTest extends TestCase
 
         // Le pagine del sito popolato funzionano e la ricerca trova gli annunci demo
         $article = Article::accepted()->first();
-        foreach (['/', '/article/index', "/category/{$article->category_id}", "/show/article/{$article->id}"] as $url) {
+        foreach (['/', '/annunci', "/categorie/{$article->category_id}", "/annunci/{$article->id}"] as $url) {
             $this->get($url)->assertOk();
         }
-        $this->get('/article/index?query=bicicletta')->assertOk()->assertSee('Bicicletta da corsa');
+        $this->get('/annunci?query=bicicletta')->assertOk()->assertSee('Bicicletta da corsa');
 
         // Carrello e richieste d'acquisto in tutti gli stati, coerenti con gli annunci
         $demo = User::where('email', 'demo@presto.it')->first();

@@ -18,7 +18,7 @@ Progetto finale del corso Hackademy (Aulab), ampliato con refactoring, test auto
 > **Python AI agent (LangChain/LangGraph + FastAPI)** running a **local model on Ollama** (no API keys, works offline):
 > a shopping assistant that answers with real listings, an AI opinion for human moderators, and a draft listing written
 > from a photo with a vision model, plus local face blurring (OpenCV) on every uploaded photo. It also has a cart with purchase requests, real-time buyer–seller messaging
-> (Laravel Reverb), seller reviews, three UI languages and 291 + 127 automated tests, static analysis with Larastan running on GitHub Actions.
+> (Laravel Reverb), seller reviews, three UI languages and 295 + 127 automated tests, static analysis with Larastan running on GitHub Actions.
 > Every AI feature is measured with repeatable evals and guarded by deterministic checks in code.
 
 <p align="center">
@@ -139,7 +139,7 @@ flowchart LR
 | Agente AI | Python 3.12 (uv), FastAPI, LangChain + LangGraph, Ollama con `qwen2.5:3b` (testo) e `qwen2.5vl:3b` (visione, facoltativo) in locale |
 | Dati | MySQL, code e sessioni su database |
 | Avvio | Docker Compose (sito, coda, Reverb, MySQL, agente, Ollama facoltativo) |
-| Test e qualità | PHPUnit (291 test), pytest (127 test), Larastan (PHPStan livello 5), Laravel Pint, ruff, GitHub Actions |
+| Test e qualità | PHPUnit (295 test), pytest (127 test), Larastan (PHPStan livello 5), Laravel Pint, ruff, GitHub Actions |
 
 ---
 
@@ -278,9 +278,9 @@ Parti da `.env.production.example` (copialo in `.env` sul server e compila i val
 php artisan test
 ```
 
-I 291 test Laravel coprono, tra l'altro:
+I 295 test Laravel coprono, tra l'altro:
 
-- **sicurezza e permessi**: solo i revisori approvano, link di promozione firmati e a scadenza, annunci non pubblicati invisibili agli altri utenti, modifica ed eliminazione riservate all'autore;
+- **sicurezza e permessi**: solo i revisori approvano, link di promozione firmati e a scadenza, annunci non pubblicati invisibili agli altri utenti, modifica ed eliminazione riservate all'autore, ogni rotta del sito protetta (login, revisore o link firmato) oppure dichiarata pubblica in un elenco esplicito, vecchi indirizzi reindirizzati con un 301;
 - **flussi completi**: ricerca e filtri, pubblicazione, revisione con email all'autore e annullamento, reset password, profilo e foto profilo, catena di elaborazione delle immagini, oscuramento dei volti (riquadri, tentativi con il servizio spento, tutte le 8 orientazioni EXIF);
 - **recensioni**: solo l'acquirente di una vendita accettata e una sola volta, errori di validazione sotto il modulo giusto, media calcolata correttamente, pagina pubblica senza dati privati;
 - **messaggi**: solo acquirente e venditore leggono e scrivono, conversazione chiusa dopo rifiuto o annullamento, evento trasmesso sui canali giusti senza il testo, contatori dei non letti, email ritardata e saltata se il messaggio è stato letto;

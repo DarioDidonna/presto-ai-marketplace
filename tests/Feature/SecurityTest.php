@@ -91,9 +91,9 @@ class SecurityTest extends TestCase
         config(['app.url' => 'https://presto.test']);
         $user = User::factory()->create();
 
-        $this->actingAs($user)->post('http://evil.example/revisor/request');
+        $this->actingAs($user)->post('http://evil.example/revisore/candidatura');
 
-        Mail::assertQueued(BecomeRevisor::class, fn (BecomeRevisor $mail) => str_starts_with($mail->approvalUrl, 'https://presto.test/make/revisor/'));
+        Mail::assertQueued(BecomeRevisor::class, fn (BecomeRevisor $mail) => str_starts_with($mail->approvalUrl, 'https://presto.test/revisore/conferma/'));
     }
 
     public function test_become_revisor_requires_post_auth_and_is_throttled(): void
@@ -101,7 +101,7 @@ class SecurityTest extends TestCase
         Mail::fake();
         $user = User::factory()->create();
 
-        $this->get('/revisor/request')->assertStatus(405);
+        $this->get('/revisore/candidatura')->assertStatus(405);
         $this->post(route('become.revisor'))->assertRedirect(route('login'));
 
         foreach (range(1, 3) as $n) {

@@ -23,7 +23,7 @@ BIKE = {
     "price": 480.0,
     "category": "Sport",
     "description": "Telaio in alluminio taglia 54",
-    "url": "http://localhost:8000/show/article/32",
+    "url": "http://localhost:8000/annunci/32",
     "image_url": "http://localhost:8000/storage/articles/32/crop_300x300_a.jpg",
     "published_at": "2026-10-01",
 }

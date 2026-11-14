@@ -52,7 +52,7 @@ CATALOG = [
     },
 ]
 for item in CATALOG:
-    item |= {"url": f"http://localhost/show/article/{item['id']}", "image_url": None, "published_at": "2026-10-01"}
+    item |= {"url": f"http://localhost/annunci/{item['id']}", "image_url": None, "published_at": "2026-10-01"}
 
 
 class Recorder:

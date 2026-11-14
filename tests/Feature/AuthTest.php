@@ -31,7 +31,7 @@ class AuthTest extends TestCase
             'email' => 'mario@example.com',
             'password' => 'Password123!',
             'password_confirmation' => 'Password123!',
-        ])->assertRedirect('/create/article');
+        ])->assertRedirect('/annunci/nuovo');
 
         $this->assertAuthenticated();
         $user = User::where('email', 'mario@example.com')->first();
@@ -55,7 +55,7 @@ class AuthTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $this->post('/login', ['email' => $user->email, 'password' => 'password'])->assertRedirect('/create/article');
+        $this->post('/login', ['email' => $user->email, 'password' => 'password'])->assertRedirect('/annunci/nuovo');
         $this->assertAuthenticatedAs($user);
 
         $this->post('/logout')->assertRedirect('/');
@@ -235,7 +235,7 @@ class AuthTest extends TestCase
             'email' => 'mario@example.com',
             'password' => 'Password123!',
             'password_confirmation' => 'Password123!',
-        ])->assertRedirect('/create/article');
+        ])->assertRedirect('/annunci/nuovo');
 
         $user = User::where('email', 'mario@example.com')->first();
         $this->post(route('verification.send'))->assertRedirect();

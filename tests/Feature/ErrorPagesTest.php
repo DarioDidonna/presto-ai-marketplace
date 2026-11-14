@@ -34,7 +34,7 @@ class ErrorPagesTest extends TestCase
             ->assertNotFound()
             ->assertSee('Page not found');
 
-        $this->withSession(['locale' => 'es'])->get('/show/article/999')
+        $this->withSession(['locale' => 'es'])->get('/annunci/999')
             ->assertNotFound()
             ->assertSee('Página no encontrada');
     }
