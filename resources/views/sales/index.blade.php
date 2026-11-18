@@ -48,7 +48,7 @@
                         <div class="fs-1 mb-3"><i class="bi bi-shop text-neon-cyan" aria-hidden="true"></i></div>
                         <h2 class="h4 text-white fw-bold text-uppercase tracking-wide mb-2">{{ __('ui.sales_empty') }}</h2>
                         <p class="text-muted-custom fs-7 mb-4">{{ __('ui.sales_empty_text') }}</p>
-                        <a href="{{ route('create.article') }}" class="btn btn-outline-neon-cyan text-uppercase tracking-wider fs-7 fw-bold px-4 py-2">
+                        <a href="{{ route('articles.create') }}" class="btn btn-outline-neon-cyan text-uppercase tracking-wider fs-7 fw-bold px-4 py-2">
                             <i class="bi bi-plus-circle me-2" aria-hidden="true"></i>{{ __('ui.publish_ad') }}
                         </a>
                     </div>

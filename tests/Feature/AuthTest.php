@@ -148,9 +148,9 @@ class AuthTest extends TestCase
         $user = User::where('email', 'mario@example.com')->first();
         Notification::assertSentTo($user, QueuedVerifyEmail::class);
 
-        $this->get(route('create.article'))->assertRedirect(route('verification.notice'));
+        $this->get(route('articles.create'))->assertRedirect(route('verification.notice'));
         $this->get(route('verification.notice'))->assertOk()->assertSee(__('ui.verify_email_title'));
-        $this->post(route('become.revisor'))->assertRedirect(route('verification.notice'));
+        $this->post(route('revisor.apply'))->assertRedirect(route('verification.notice'));
 
         $article = Article::factory()->accepted()->create();
         $this->post(route('cart.add', $article))->assertRedirect(route('verification.notice'));
@@ -161,7 +161,7 @@ class AuthTest extends TestCase
         $this->get($link);
 
         $this->assertTrue($user->fresh()->hasVerifiedEmail());
-        $this->get(route('create.article'))->assertOk();
+        $this->get(route('articles.create'))->assertOk();
     }
 
     public function test_changing_email_needs_the_password_and_a_new_verification(): void
@@ -240,7 +240,7 @@ class AuthTest extends TestCase
         $user = User::where('email', 'mario@example.com')->first();
         $this->post(route('verification.send'))->assertRedirect();
         $user->markEmailAsVerified();
-        $this->actingAs($user)->post(route('become.revisor'))->assertRedirect(route('homepage'));
+        $this->actingAs($user)->post(route('revisor.apply'))->assertRedirect(route('homepage'));
         auth()->logout();
         $this->from('/forgot-password')->post('/forgot-password', ['email' => $user->email])->assertRedirect('/forgot-password');
 
@@ -268,7 +268,7 @@ class AuthTest extends TestCase
 
         $user->sendEmailVerificationNotification();
         $user->sendPasswordResetNotification('token');
-        $this->actingAs($user)->post(route('become.revisor'));
+        $this->actingAs($user)->post(route('revisor.apply'));
 
         Queue::assertPushed(SendQueuedNotifications::class, 2);
         Queue::assertPushed(SendQueuedNotifications::class, $limited);

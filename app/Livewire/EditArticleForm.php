@@ -60,7 +60,7 @@ class EditArticleForm extends Component
 
         session()->flash('message', __('ui.article_updated'));
 
-        return $this->redirectRoute('article.show', $this->article);
+        return $this->redirectRoute('articles.show', $this->article);
     }
 
     public function render()

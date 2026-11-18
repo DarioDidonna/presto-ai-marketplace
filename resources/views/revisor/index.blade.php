@@ -191,8 +191,8 @@
             </div>
 
             @foreach ([
-                ['id' => 'confirmAcceptModal', 'route' => 'accept', 'icon' => 'bi-check-circle-fill text-success', 'border' => 'border-success', 'button' => 'btn-success text-black', 'key' => 'accept'],
-                ['id' => 'confirmRejectModal', 'route' => 'reject', 'icon' => 'bi-x-octagon-fill text-danger', 'border' => 'border-danger', 'button' => 'btn-danger', 'key' => 'reject'],
+                ['id' => 'confirmAcceptModal', 'route' => 'revisor.accept', 'icon' => 'bi-check-circle-fill text-success', 'border' => 'border-success', 'button' => 'btn-success text-black', 'key' => 'accept'],
+                ['id' => 'confirmRejectModal', 'route' => 'revisor.reject', 'icon' => 'bi-x-octagon-fill text-danger', 'border' => 'border-danger', 'button' => 'btn-danger', 'key' => 'reject'],
             ] as $modal)
                 <div class="modal fade" id="{{ $modal['id'] }}" tabindex="-1" aria-labelledby="{{ $modal['id'] }}Label" aria-hidden="true">
                     <div class="modal-dialog modal-dialog-centered">

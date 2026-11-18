@@ -41,15 +41,15 @@ class RevisorFlowTest extends TestCase
         $good = Article::factory()->create();
         $bad = Article::factory()->create();
 
-        $this->actingAs($revisor)->from(route('revisor.index'))->patch(route('accept', $good))
+        $this->actingAs($revisor)->from(route('revisor.index'))->patch(route('revisor.accept', $good))
             ->assertRedirect(route('revisor.index'))
             ->assertSessionHas('message');
-        $this->actingAs($revisor)->from(route('revisor.index'))->patch(route('reject', $bad));
+        $this->actingAs($revisor)->from(route('revisor.index'))->patch(route('revisor.reject', $bad));
 
         $this->assertTrue($good->fresh()->is_accepted);
         $this->assertFalse($bad->fresh()->is_accepted);
 
-        $this->get(route('article.index'))->assertSee($good->title)->assertDontSee($bad->title);
+        $this->get(route('articles.index'))->assertSee($good->title)->assertDontSee($bad->title);
         $this->get(route('homepage'))->assertSee($good->title)->assertDontSee($bad->title);
     }
 
@@ -59,7 +59,7 @@ class RevisorFlowTest extends TestCase
         config(['app.admin_email' => 'responsabile@example.com']);
         $candidate = User::factory()->create();
 
-        $this->actingAs($candidate)->post(route('become.revisor'));
+        $this->actingAs($candidate)->post(route('revisor.apply'));
 
         Mail::assertQueued(BecomeRevisor::class, function (BecomeRevisor $mail) use ($candidate) {
             $html = $mail->render();
@@ -121,7 +121,7 @@ class RevisorFlowTest extends TestCase
         $this->assertStringContainsString('data-bs-target="#confirmRejectModal"', $html);
 
         // Ogni form PATCH sta dentro la rispettiva modale
-        foreach (['confirmAcceptModal' => 'accept', 'confirmRejectModal' => 'reject'] as $modal => $route) {
+        foreach (['confirmAcceptModal' => 'revisor.accept', 'confirmRejectModal' => 'revisor.reject'] as $modal => $route) {
             $start = strpos($html, 'id="'.$modal.'"');
             $form = strpos($html, 'action="'.route($route, $article).'"');
             $this->assertNotFalse($start);

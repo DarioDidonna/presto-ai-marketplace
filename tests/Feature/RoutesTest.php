@@ -70,12 +70,12 @@ class RoutesTest extends TestCase
         $article = Article::factory()->accepted()->for($user)->for($category)->create();
 
         $moved = [
-            '/article/index?page=2&sort=price_asc' => route('article.index', ['page' => 2, 'sort' => 'price_asc']),
-            '/search/article?query=bici&category=3' => route('article.index', ['query' => 'bici', 'category' => 3]),
-            '/create/article' => route('create.article'),
-            "/show/article/{$article->id}" => route('article.show', $article),
-            "/article/{$article->id}/edit" => route('article.edit', $article),
-            "/category/{$category->id}?page=2" => route('byCategory', ['category' => $category, 'page' => 2]),
+            '/article/index?page=2&sort=price_asc' => route('articles.index', ['page' => 2, 'sort' => 'price_asc']),
+            '/search/article?query=bici&category=3' => route('articles.index', ['query' => 'bici', 'category' => 3]),
+            '/create/article' => route('articles.create'),
+            "/show/article/{$article->id}" => route('articles.show', $article),
+            "/article/{$article->id}/edit" => route('articles.edit', $article),
+            "/category/{$category->id}?page=2" => route('categories.show', ['category' => $category, 'page' => 2]),
             "/venditore/{$user->id}" => route('sellers.show', $user),
             '/revisor/index' => route('revisor.index'),
         ];
@@ -90,13 +90,13 @@ class RoutesTest extends TestCase
         $user = User::factory()->create();
         $article = Article::factory()->accepted()->create();
 
-        $this->assertSame(url('/annunci'), route('article.index'));
-        $this->assertSame(url('/annunci/nuovo'), route('create.article'));
-        $this->assertSame(url("/annunci/{$article->id}"), route('article.show', $article));
-        $this->assertSame(url("/annunci/{$article->id}/modifica"), route('article.edit', $article));
-        $this->assertSame(url("/categorie/{$article->category_id}"), route('byCategory', $article->category_id));
+        $this->assertSame(url('/annunci'), route('articles.index'));
+        $this->assertSame(url('/annunci/nuovo'), route('articles.create'));
+        $this->assertSame(url("/annunci/{$article->id}"), route('articles.show', $article));
+        $this->assertSame(url("/annunci/{$article->id}/modifica"), route('articles.edit', $article));
+        $this->assertSame(url("/categorie/{$article->category_id}"), route('categories.show', $article->category_id));
         $this->assertSame(url("/venditori/{$user->id}"), route('sellers.show', $user));
         $this->assertSame(url('/revisore'), route('revisor.index'));
-        $this->assertSame(url("/revisore/annunci/{$article->id}/accetta"), route('accept', $article));
+        $this->assertSame(url("/revisore/annunci/{$article->id}/accetta"), route('revisor.accept', $article));
     }
 }

@@ -150,8 +150,8 @@ class CheckoutTest extends TestCase
     {
         $article = Article::factory()->accepted()->create(['reserved_at' => now()]);
 
-        $this->get(route('article.index'))->assertSee(__('ui.reserved'));
-        $this->actingAs($this->buyer)->get(route('article.show', $article))
+        $this->get(route('articles.index'))->assertSee(__('ui.reserved'));
+        $this->actingAs($this->buyer)->get(route('articles.show', $article))
             ->assertSee(__('ui.reserved_notice'))
             ->assertDontSee(__('ui.cart_add'));
     }

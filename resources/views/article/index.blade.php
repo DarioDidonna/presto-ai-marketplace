@@ -27,7 +27,7 @@
         <div class="container">
 
             {{-- Filtri: form GET, combinabili con la ricerca testuale --}}
-            <form action="{{ route('article.index') }}" method="GET" role="search" aria-label="{{ __('ui.filters') }}"
+            <form action="{{ route('articles.index') }}" method="GET" role="search" aria-label="{{ __('ui.filters') }}"
                 class="p-3 p-md-4 rounded-3 border border-secondary-subtle bg-navbar-card shadow-sm mb-4">
                 <div class="row g-3 align-items-end">
                     <div class="col-12 col-lg-3">
@@ -83,7 +83,7 @@
                     {{ $articles->total() == 1 ? __('ui.single_result') : __('ui.results_found') }}
                 </p>
                 @if ($filters->isFiltered())
-                    <a href="{{ route('article.index') }}" class="btn btn-sm btn-outline-secondary text-white">
+                    <a href="{{ route('articles.index') }}" class="btn btn-sm btn-outline-secondary text-white">
                         <i class="bi bi-x-circle me-1"></i>{{ __('ui.reset_filters') }}
                     </a>
                 @endif
@@ -113,13 +113,13 @@
                         @if ($filters->isFiltered())
                             <h2 class="h4 text-white fw-bold text-uppercase tracking-wide mb-2">{{ __('ui.no_articles_match') }}</h2>
                             <p class="text-muted-custom fs-7 mb-4">{{ __('ui.search_tip') }}</p>
-                            <a href="{{ route('article.index') }}" class="btn btn-outline-neon-cyan text-uppercase tracking-wider fs-7 fw-bold px-4 py-2">
+                            <a href="{{ route('articles.index') }}" class="btn btn-outline-neon-cyan text-uppercase tracking-wider fs-7 fw-bold px-4 py-2">
                                 <i class="bi bi-x-circle me-2"></i>{{ __('ui.reset_filters') }}
                             </a>
                         @else
                             <h2 class="h4 text-white fw-bold text-uppercase tracking-wide mb-2">{{ __('ui.no_ads_found') }}</h2>
                             <p class="text-muted-custom fs-7 mb-4">{{ __('ui.no_ads_message') }}</p>
-                            <a href="{{ route('create.article') }}"
+                            <a href="{{ route('articles.create') }}"
                                 class="btn btn-outline-neon-cyan text-uppercase tracking-wider fs-7 fw-bold px-4 py-2">
                                 <i class="bi bi-plus-circle me-2"></i> {{ __('ui.create_ad') }}
                             </a>

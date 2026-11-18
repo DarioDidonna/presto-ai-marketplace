@@ -5,7 +5,7 @@ namespace Tests\Unit;
 use App\Models\Image;
 use Tests\TestCase;
 
-class ExampleTest extends TestCase
+class ImageUrlTest extends TestCase
 {
     public function test_image_url_without_size_points_to_original(): void
     {

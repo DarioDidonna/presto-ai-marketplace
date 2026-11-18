@@ -26,32 +26,32 @@ Route::pattern('user', '[0-9]+');
 Route::pattern('purchaseRequest', '[0-9]+');
 
 Route::get('/', [PublicController::class, 'homepage'])->name('homepage');
-Route::post('/lingua/{lang}', [PublicController::class, 'setLanguage'])->whereIn('lang', config('app.available_locales'))->name('setLocale');
+Route::post('/lingua/{lang}', [PublicController::class, 'setLanguage'])->whereIn('lang', config('app.available_locales'))->name('locale.update');
 
 // ANNUNCI
-Route::get('/annunci', [ArticleController::class, 'index'])->name('article.index');
-Route::get('/annunci/nuovo', [ArticleController::class, 'create'])->middleware(['auth', 'verified'])->name('create.article');
-Route::get('/annunci/{article}', [ArticleController::class, 'show'])->name('article.show');
+Route::get('/annunci', [ArticleController::class, 'index'])->name('articles.index');
+Route::get('/annunci/nuovo', [ArticleController::class, 'create'])->middleware(['auth', 'verified'])->name('articles.create');
+Route::get('/annunci/{article}', [ArticleController::class, 'show'])->name('articles.show');
 // Solo l'autore (ArticlePolicy)
-Route::get('/annunci/{article}/modifica', [ArticleController::class, 'edit'])->middleware(['auth', 'can:update,article'])->name('article.edit');
-Route::delete('/annunci/{article}', [ArticleController::class, 'destroy'])->middleware(['auth', 'can:delete,article'])->name('article.destroy');
+Route::get('/annunci/{article}/modifica', [ArticleController::class, 'edit'])->middleware(['auth', 'can:update,article'])->name('articles.edit');
+Route::delete('/annunci/{article}', [ArticleController::class, 'destroy'])->middleware(['auth', 'can:delete,article'])->name('articles.destroy');
 
-Route::get('/categorie/{category}', [ArticleController::class, 'byCategory'])->name('byCategory');
+Route::get('/categorie/{category}', [ArticleController::class, 'byCategory'])->name('categories.show');
 Route::get('/venditori/{user}', [SellerController::class, 'show'])->name('sellers.show');
 
 // REVISORI
 Route::middleware('isRevisor')->prefix('revisore')->group(function () {
     Route::get('/', [RevisorController::class, 'index'])->name('revisor.index');
-    Route::patch('/annunci/{article}/accetta', [RevisorController::class, 'accept'])->middleware('can:review,article')->name('accept');
-    Route::patch('/annunci/{article}/rifiuta', [RevisorController::class, 'reject'])->middleware('can:review,article')->name('reject');
+    Route::patch('/annunci/{article}/accetta', [RevisorController::class, 'accept'])->middleware('can:review,article')->name('revisor.accept');
+    Route::patch('/annunci/{article}/rifiuta', [RevisorController::class, 'reject'])->middleware('can:review,article')->name('revisor.reject');
     // Annulla l'ultima decisione (entro 5 minuti)
     Route::patch('/annulla', [RevisorController::class, 'undo'])->name('revisor.undo');
 });
 
 // Candidatura (utente) e conferma con il link firmato inviato all'amministratore
-Route::post('/revisore/candidatura', [RevisorController::class, 'becomeRevisor'])->middleware(['auth', 'verified', 'throttle:revisor-request'])->name('become.revisor');
-Route::get('/revisore/conferma/{user}', [RevisorController::class, 'confirmRevisor'])->middleware('signed:relative')->name('make.revisor');
-Route::post('/revisore/conferma/{user}', [RevisorController::class, 'makeRevisor'])->middleware(['signed:relative', 'throttle:revisor-confirm'])->name('make.revisor.store');
+Route::post('/revisore/candidatura', [RevisorController::class, 'becomeRevisor'])->middleware(['auth', 'verified', 'throttle:revisor-request'])->name('revisor.apply');
+Route::get('/revisore/conferma/{user}', [RevisorController::class, 'confirmRevisor'])->middleware('signed:relative')->name('revisor.confirm');
+Route::post('/revisore/conferma/{user}', [RevisorController::class, 'makeRevisor'])->middleware(['signed:relative', 'throttle:revisor-confirm'])->name('revisor.confirm.store');
 
 // PROFILO
 Route::middleware('auth')->prefix('profilo')->name('profile.')->group(function () {
@@ -97,11 +97,11 @@ $movedTo = fn (string $route) => fn (Request $request) => redirect()->route(
     301,
 );
 
-Route::get('/article/index', $movedTo('article.index'));
-Route::get('/search/article', $movedTo('article.index'));
-Route::get('/create/article', $movedTo('create.article'));
-Route::get('/show/article/{article}', $movedTo('article.show'));
-Route::get('/article/{article}/edit', $movedTo('article.edit'));
-Route::get('/category/{category}', $movedTo('byCategory'));
+Route::get('/article/index', $movedTo('articles.index'));
+Route::get('/search/article', $movedTo('articles.index'));
+Route::get('/create/article', $movedTo('articles.create'));
+Route::get('/show/article/{article}', $movedTo('articles.show'));
+Route::get('/article/{article}/edit', $movedTo('articles.edit'));
+Route::get('/category/{category}', $movedTo('categories.show'));
 Route::get('/venditore/{user}', $movedTo('sellers.show'));
 Route::get('/revisor/index', $movedTo('revisor.index'));

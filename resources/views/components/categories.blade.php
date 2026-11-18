@@ -20,7 +20,7 @@
             
             @foreach($categories as $category)
                 <div class="col d-flex">
-                    <a href="{{ route('byCategory', ['category' => $category]) }}" class="category-card-wrapper d-flex flex-column align-items-center justify-content-between text-decoration-none text-center p-4 w-100 transition-all">
+                    <a href="{{ route('categories.show', ['category' => $category]) }}" class="category-card-wrapper d-flex flex-column align-items-center justify-content-between text-decoration-none text-center p-4 w-100 transition-all">
                         
                         <div class="category-icon-box mb-3 position-relative mx-auto d-flex align-items-center justify-content-center">
                             <i class="{{ $category->icon ?? 'bi bi-cpu' }} fs-2 text-neon-cyan transition-all"></i>

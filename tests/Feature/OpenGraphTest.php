@@ -41,7 +41,7 @@ class OpenGraphTest extends TestCase
         $image = $article->images()->create(['path' => "articles/{$article->id}/foto.jpg"]);
         Storage::disk('public')->put("articles/{$article->id}/crop_800x800_foto.jpg", 'x');
 
-        $html = $this->get(route('article.show', $article))->getContent();
+        $html = $this->get(route('articles.show', $article))->getContent();
 
         $this->assertSame('product', $this->meta($html, 'og:type'));
         $this->assertSame('Bici "vintage" da corsa · Presto.it', $this->meta($html, 'og:title'));
@@ -57,7 +57,7 @@ class OpenGraphTest extends TestCase
     {
         $article = Article::factory()->accepted()->create();
 
-        $html = $this->get(route('article.show', $article))->getContent();
+        $html = $this->get(route('articles.show', $article))->getContent();
         $this->assertSame(asset('media/og-default.jpg'), $this->meta($html, 'og:image'));
     }
 
@@ -65,7 +65,7 @@ class OpenGraphTest extends TestCase
     {
         $article = Article::factory()->create();
 
-        $html = $this->actingAs($article->user)->get(route('article.show', $article))->getContent();
+        $html = $this->actingAs($article->user)->get(route('articles.show', $article))->getContent();
         $this->assertSame('noindex', $this->meta($html, 'robots'));
     }
 

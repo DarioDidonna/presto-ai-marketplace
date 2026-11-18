@@ -26,7 +26,7 @@
                         </div>
 
                         <div class="col-12 col-md-4 text-center text-md-end">
-                            <form action="{{ route('become.revisor') }}" method="POST" class="d-inline">
+                            <form action="{{ route('revisor.apply') }}" method="POST" class="d-inline">
                                 @csrf
                                 <button type="submit"
                                     class="btn btn-gradient-amber border-0 rounded-pill px-4 py-3 fw-bold text-uppercase tracking-wider fs-7 shadow shadow-amber transition-all"

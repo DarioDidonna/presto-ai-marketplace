@@ -78,10 +78,10 @@
                             <i class="bi bi-lightning-charge me-2 text-neon-cyan"></i>{{ __('ui.quick_actions') }}
                         </h2>
                         <div class="d-grid gap-2">
-                            <a href="{{ route('create.article') }}" class="btn btn-outline-neon-cyan btn-sm text-start">
+                            <a href="{{ route('articles.create') }}" class="btn btn-outline-neon-cyan btn-sm text-start">
                                 <i class="bi bi-plus-circle me-2"></i>{{ __('ui.publish_ad') }}
                             </a>
-                            <a href="{{ route('article.index') }}" class="btn btn-outline-secondary btn-sm text-start text-white">
+                            <a href="{{ route('articles.index') }}" class="btn btn-outline-secondary btn-sm text-start text-white">
                                 <i class="bi bi-grid me-2"></i>{{ __('ui.all_ads_title') }}
                             </a>
                             @if ($user->is_revisor)
@@ -90,7 +90,7 @@
                                     <span class="badge bg-warning text-dark ms-1">{{ \App\Models\Article::toBeRevisedCount() }}</span>
                                 </a>
                             @else
-                                <form action="{{ route('become.revisor') }}" method="POST" class="d-grid">
+                                <form action="{{ route('revisor.apply') }}" method="POST" class="d-grid">
                                     @csrf
                                     <button type="submit" class="btn btn-outline-warning btn-sm text-start">
                                         <i class="bi bi-shield-plus me-2"></i>{{ __('ui.apply_revisor') }}
@@ -221,13 +221,13 @@
                             <h2 class="h6 text-white text-uppercase tracking-wide fw-bold mb-0">
                                 <i class="bi bi-collection me-2 text-neon-cyan"></i>{{ __('ui.my_ads') }}
                             </h2>
-                            <a href="{{ route('create.article') }}" class="btn btn-outline-neon-cyan btn-sm text-uppercase fs-8 fw-bold">
+                            <a href="{{ route('articles.create') }}" class="btn btn-outline-neon-cyan btn-sm text-uppercase fs-8 fw-bold">
                                 <i class="bi bi-plus-circle me-1"></i>{{ __('ui.new_ad') }}
                             </a>
                         </div>
 
                         @forelse ($articles as $article)
-                            <a href="{{ route('article.show', $article) }}"
+                            <a href="{{ route('articles.show', $article) }}"
                                 class="d-flex align-items-center gap-3 p-2 rounded text-decoration-none profile-article-row {{ $loop->last ? '' : 'border-bottom border-secondary-subtle' }}">
                                 <img src="{{ $article->images->first()?->thumbnailUrl() ?? asset('media/placeholder.svg') }}"
                                     alt="" width="56" height="56" loading="lazy" class="rounded object-fit-cover flex-shrink-0">

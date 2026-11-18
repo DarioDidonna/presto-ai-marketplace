@@ -12,7 +12,7 @@
                 </a>
                 <p class="fs-7 lh-base mb-4 max-w-540">{{ __('ui.footer_description') }}</p>
                 <div class="d-flex flex-wrap gap-2">
-                    <a href="{{ route('create.article') }}" class="btn btn-cyber-gradient btn-sm text-uppercase tracking-wider fs-8 fw-bold text-light">
+                    <a href="{{ route('articles.create') }}" class="btn btn-cyber-gradient btn-sm text-uppercase tracking-wider fs-8 fw-bold text-light">
                         <i class="bi bi-plus-circle-fill me-1" aria-hidden="true"></i>{{ __('ui.publish_ad') }}
                     </a>
                     @if (Auth::user()?->is_revisor)
@@ -30,7 +30,7 @@
             <nav class="col-6 col-md-4 col-lg-2" aria-labelledby="footer-explore">
                 <h2 id="footer-explore" class="footer-heading">{{ __('ui.footer_explore') }}</h2>
                 <ul class="list-unstyled d-flex flex-column gap-2 fs-7 mb-0">
-                    <li><a href="{{ route('article.index') }}" class="footer-link-custom">{{ __('ui.announcements') }}</a></li>
+                    <li><a href="{{ route('articles.index') }}" class="footer-link-custom">{{ __('ui.announcements') }}</a></li>
                     <li><a href="{{ route('homepage') }}#categoriesSection" class="footer-link-custom">{{ __('ui.categories') }}</a></li>
                     <li><a href="{{ route('homepage') }}#howItWorksSection" class="footer-link-custom">{{ __('ui.how_it_works') }}</a></li>
                 </ul>
@@ -39,7 +39,7 @@
             <nav class="col-6 col-md-4 col-lg-2" aria-labelledby="footer-sell">
                 <h2 id="footer-sell" class="footer-heading">{{ __('ui.footer_sell') }}</h2>
                 <ul class="list-unstyled d-flex flex-column gap-2 fs-7 mb-0">
-                    <li><a href="{{ route('create.article') }}" class="footer-link-custom">{{ __('ui.new_ad') }}</a></li>
+                    <li><a href="{{ route('articles.create') }}" class="footer-link-custom">{{ __('ui.new_ad') }}</a></li>
                     <li><a href="{{ route('sales.index') }}" class="footer-link-custom">{{ __('ui.sales_title') }}</a></li>
                     <li><a href="{{ route('profile.show') }}" class="footer-link-custom">{{ __('ui.footer_my_ads') }}</a></li>
                 </ul>

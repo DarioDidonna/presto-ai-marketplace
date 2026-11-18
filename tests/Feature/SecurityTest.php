@@ -28,9 +28,9 @@ class SecurityTest extends TestCase
     {
         $article = Article::factory()->create();
 
-        $this->patch(route('accept', $article))->assertRedirect(route('homepage'));
-        $this->patch(route('reject', $article))->assertRedirect(route('homepage'));
-        $this->actingAs(User::factory()->create())->patch(route('accept', $article))->assertRedirect(route('homepage'));
+        $this->patch(route('revisor.accept', $article))->assertRedirect(route('homepage'));
+        $this->patch(route('revisor.reject', $article))->assertRedirect(route('homepage'));
+        $this->actingAs(User::factory()->create())->patch(route('revisor.accept', $article))->assertRedirect(route('homepage'));
 
         $this->assertNull($article->fresh()->is_accepted);
     }
@@ -47,11 +47,11 @@ class SecurityTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $this->get(route('make.revisor', $user))->assertForbidden();
-        $this->post(route('make.revisor.store', $user))->assertForbidden();
+        $this->get(route('revisor.confirm', $user))->assertForbidden();
+        $this->post(route('revisor.confirm.store', $user))->assertForbidden();
         $this->assertFalse((bool) $user->fresh()->is_revisor);
 
-        $expired = URL::temporarySignedRoute('make.revisor', now()->subMinute(), ['user' => $user], absolute: false);
+        $expired = URL::temporarySignedRoute('revisor.confirm', now()->subMinute(), ['user' => $user], absolute: false);
         $this->get($expired)->assertForbidden();
         $this->post($expired)->assertForbidden();
         $this->assertFalse((bool) $user->fresh()->is_revisor);
@@ -60,7 +60,7 @@ class SecurityTest extends TestCase
     public function test_opening_the_link_does_not_promote_and_confirming_works_once(): void
     {
         $user = User::factory()->create();
-        $url = URL::temporarySignedRoute('make.revisor', now()->addDay(), ['user' => $user], absolute: false);
+        $url = URL::temporarySignedRoute('revisor.confirm', now()->addDay(), ['user' => $user], absolute: false);
 
         // Un antivirus di posta che apre il link non deve promuovere nessuno
         $this->get($url)->assertOk()->assertSee($user->name)->assertSee('action="'.e($url).'"', false);
@@ -79,7 +79,7 @@ class SecurityTest extends TestCase
     {
         $victim = User::factory()->create();
         $attacker = User::factory()->create();
-        $url = URL::temporarySignedRoute('make.revisor', now()->addDay(), ['user' => $victim], absolute: false);
+        $url = URL::temporarySignedRoute('revisor.confirm', now()->addDay(), ['user' => $victim], absolute: false);
 
         $this->post(str_replace("/{$victim->id}?", "/{$attacker->id}?", $url))->assertForbidden();
         $this->assertFalse((bool) $attacker->fresh()->is_revisor);
@@ -102,12 +102,12 @@ class SecurityTest extends TestCase
         $user = User::factory()->create();
 
         $this->get('/revisore/candidatura')->assertStatus(405);
-        $this->post(route('become.revisor'))->assertRedirect(route('login'));
+        $this->post(route('revisor.apply'))->assertRedirect(route('login'));
 
         foreach (range(1, 3) as $n) {
-            $this->actingAs($user)->post(route('become.revisor'))->assertRedirect(route('homepage'));
+            $this->actingAs($user)->post(route('revisor.apply'))->assertRedirect(route('homepage'));
         }
-        $this->actingAs($user)->post(route('become.revisor'))->assertStatus(429);
+        $this->actingAs($user)->post(route('revisor.apply'))->assertStatus(429);
 
         Mail::assertQueued(BecomeRevisor::class, 3);
     }
@@ -116,10 +116,10 @@ class SecurityTest extends TestCase
     {
         foreach ([Article::factory()->create(), Article::factory()->rejected()->create()] as $article) {
             $this->app['auth']->forgetGuards();
-            $this->get(route('article.show', $article))->assertNotFound();
-            $this->actingAs(User::factory()->create())->get(route('article.show', $article))->assertNotFound();
-            $this->actingAs($article->user)->get(route('article.show', $article))->assertOk();
-            $this->actingAs(User::factory()->revisor()->create())->get(route('article.show', $article))->assertOk();
+            $this->get(route('articles.show', $article))->assertNotFound();
+            $this->actingAs(User::factory()->create())->get(route('articles.show', $article))->assertNotFound();
+            $this->actingAs($article->user)->get(route('articles.show', $article))->assertOk();
+            $this->actingAs(User::factory()->revisor()->create())->get(route('articles.show', $article))->assertOk();
         }
     }
 
@@ -169,15 +169,15 @@ class SecurityTest extends TestCase
         $revisor = User::factory()->revisor()->create();
         $own = Article::factory()->create(['user_id' => $revisor->id]);
 
-        $this->actingAs($revisor)->patch(route('accept', $own))->assertForbidden();
-        $this->actingAs($revisor)->patch(route('reject', $own))->assertForbidden();
+        $this->actingAs($revisor)->patch(route('revisor.accept', $own))->assertForbidden();
+        $this->actingAs($revisor)->patch(route('revisor.reject', $own))->assertForbidden();
         $this->assertNull($own->fresh()->is_accepted);
 
         $this->actingAs($revisor)->get(route('revisor.index'))->assertDontSee($own->title);
 
         $other = Article::factory()->create();
         $this->actingAs($revisor)->get(route('revisor.index'))->assertSee($other->title);
-        $this->actingAs($revisor)->patch(route('accept', $other))->assertRedirect();
+        $this->actingAs($revisor)->patch(route('revisor.accept', $other))->assertRedirect();
         $this->assertTrue($other->fresh()->is_accepted);
     }
 
@@ -282,7 +282,7 @@ class SecurityTest extends TestCase
         $this->actingAs($user)->get(route('profile.export'))->assertStatus(429);
 
         // Le altre azioni hanno il loro contatore
-        $this->actingAs($user)->post(route('become.revisor'))->assertRedirect(route('homepage'));
+        $this->actingAs($user)->post(route('revisor.apply'))->assertRedirect(route('homepage'));
         $this->actingAs($user)->delete(route('profile.destroy'), ['password' => 'sbagliata'])
             ->assertSessionHasErrorsIn('deleteAccount', 'password');
     }

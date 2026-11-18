@@ -52,7 +52,7 @@ class ErrorPagesTest extends TestCase
     {
         $article = Article::factory()->accepted()->create();
 
-        $this->actingAs(User::factory()->create())->get(route('article.edit', $article))
+        $this->actingAs(User::factory()->create())->get(route('articles.edit', $article))
             ->assertForbidden()
             ->assertSee(__('ui.error_403_title'));
     }
@@ -63,10 +63,10 @@ class ErrorPagesTest extends TestCase
         $user = User::factory()->create();
 
         foreach (range(1, 3) as $n) {
-            $this->actingAs($user)->post(route('become.revisor'));
+            $this->actingAs($user)->post(route('revisor.apply'));
         }
 
-        $this->actingAs($user)->post(route('become.revisor'))
+        $this->actingAs($user)->post(route('revisor.apply'))
             ->assertStatus(429)
             ->assertSee(__('ui.error_429_title'));
     }

@@ -58,7 +58,7 @@
                     </p>
                 </div>
                 <div class="col-12 col-md-4 text-md-end mt-3 mt-md-0">
-                    <a href="{{ route('create.article') }}"
+                    <a href="{{ route('articles.create') }}"
                         class="btn btn-cyber-gradient text-uppercase text-light tracking-wider fs-7 fw-bold">
                         <i class="bi bi-plus-circle-fill me-2"></i>{{ __('ui.insert') }}
                     </a>

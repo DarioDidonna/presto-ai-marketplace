@@ -34,7 +34,7 @@ class SearchArticlesTest extends TestCase
     public function test_old_search_url_redirects_keeping_the_parameters(): void
     {
         $this->get('/search/article?query=bici&sort=price_asc')
-            ->assertRedirect(route('article.index', ['query' => 'bici', 'sort' => 'price_asc']));
+            ->assertRedirect(route('articles.index', ['query' => 'bici', 'sort' => 'price_asc']));
     }
 
     public function test_filters_by_category_and_price_range(): void

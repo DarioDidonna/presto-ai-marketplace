@@ -26,8 +26,8 @@ class ArticleReviewedNotificationTest extends TestCase
         $accepted = Article::factory()->create();
         $rejected = Article::factory()->create();
 
-        $this->actingAs($revisor)->patch(route('accept', $accepted));
-        $this->actingAs($revisor)->patch(route('reject', $rejected));
+        $this->actingAs($revisor)->patch(route('revisor.accept', $accepted));
+        $this->actingAs($revisor)->patch(route('revisor.reject', $rejected));
 
         Notification::assertSentTo($accepted->user, ArticleReviewed::class, fn ($n) => $n->accepted === true && $n->article->is($accepted));
         Notification::assertSentTo($rejected->user, ArticleReviewed::class, fn ($n) => $n->accepted === false && $n->article->is($rejected));
@@ -39,7 +39,7 @@ class ArticleReviewedNotificationTest extends TestCase
         $revisor = User::factory()->revisor()->create();
         $article = Article::factory()->accepted()->create();
 
-        $this->actingAs($revisor)->patch(route('accept', $article));
+        $this->actingAs($revisor)->patch(route('revisor.accept', $article));
 
         Notification::assertNothingSent();
     }
@@ -64,11 +64,11 @@ class ArticleReviewedNotificationTest extends TestCase
         $accepted = $render(true);
         $this->assertSame('Il tuo annuncio «Bici da corsa» è stato pubblicato', $accepted->subject);
         $this->assertSame('Ciao Giulia,', $accepted->greeting);
-        $this->assertSame(route('article.show', $article), $accepted->actionUrl);
+        $this->assertSame(route('articles.show', $article), $accepted->actionUrl);
 
         $rejected = $render(false);
         $this->assertSame('Il tuo annuncio «Bici da corsa» non è stato approvato', $rejected->subject);
-        $this->assertSame(route('article.edit', $article), $rejected->actionUrl);
+        $this->assertSame(route('articles.edit', $article), $rejected->actionUrl);
     }
 
     public function test_email_uses_the_author_language_not_the_revisor_one(): void
@@ -78,7 +78,7 @@ class ArticleReviewedNotificationTest extends TestCase
 
         $this->actingAs(User::factory()->revisor()->create(['locale' => 'it']))
             ->withSession(['locale' => 'it'])
-            ->patch(route('accept', $article));
+            ->patch(route('revisor.accept', $article));
 
         Notification::assertSentTo($author, ArticleReviewed::class, function ($notification, $channels, $notifiable, $locale) {
             return $locale === 'en';

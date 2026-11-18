@@ -29,7 +29,7 @@
                         <div class="fs-1 mb-3"><i class="bi bi-bag text-neon-cyan" aria-hidden="true"></i></div>
                         <h2 class="h4 text-white fw-bold text-uppercase tracking-wide mb-2">{{ __('ui.cart_empty') }}</h2>
                         <p class="text-muted-custom fs-7 mb-4">{{ __('ui.cart_empty_text') }}</p>
-                        <a href="{{ route('article.index') }}" class="btn btn-outline-neon-cyan text-uppercase tracking-wider fs-7 fw-bold px-4 py-2">
+                        <a href="{{ route('articles.index') }}" class="btn btn-outline-neon-cyan text-uppercase tracking-wider fs-7 fw-bold px-4 py-2">
                             <i class="bi bi-search me-2" aria-hidden="true"></i>{{ __('ui.cart_continue') }}
                         </a>
                     </div>
@@ -51,12 +51,12 @@
 
                                 @foreach ($group['articles'] as $article)
                                     <div class="d-flex align-items-center gap-3 py-3 {{ $loop->last ? '' : 'border-bottom border-secondary-subtle' }}">
-                                        <a href="{{ route('article.show', $article) }}" class="flex-shrink-0">
+                                        <a href="{{ route('articles.show', $article) }}" class="flex-shrink-0">
                                             <img src="{{ $article->images->first()?->thumbnailUrl() ?? asset('media/placeholder.svg') }}"
                                                 alt="" width="72" height="72" loading="lazy" class="rounded object-fit-cover">
                                         </a>
                                         <div class="flex-grow-1 min-w-0">
-                                            <a href="{{ route('article.show', $article) }}" class="text-white fw-semibold text-decoration-none d-block text-truncate">
+                                            <a href="{{ route('articles.show', $article) }}" class="text-white fw-semibold text-decoration-none d-block text-truncate">
                                                 {{ $article->title }}
                                             </a>
                                             <span class="text-muted-custom fs-8">{{ $article->category?->translated_name ?? __('ui.no_category') }}</span>
@@ -110,7 +110,7 @@
                                 </button>
                             </form>
 
-                            <a href="{{ route('article.index') }}" class="btn btn-outline-neon-cyan w-100 mb-2">
+                            <a href="{{ route('articles.index') }}" class="btn btn-outline-neon-cyan w-100 mb-2">
                                 <i class="bi bi-arrow-left me-1" aria-hidden="true"></i>{{ __('ui.cart_continue') }}
                             </a>
                             <form action="{{ route('cart.clear') }}" method="POST" class="m-0">

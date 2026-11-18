@@ -29,14 +29,14 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link nav-link-custom text-white hover-neon transition-all px-2 {{ request()->routeIs('article.index') ? 'active' : '' }}"
-                        href="{{ route('article.index') }}" @if (request()->routeIs('article.index')) aria-current="page" @endif>
+                    <a class="nav-link nav-link-custom text-white hover-neon transition-all px-2 {{ request()->routeIs('articles.index') ? 'active' : '' }}"
+                        href="{{ route('articles.index') }}" @if (request()->routeIs('articles.index')) aria-current="page" @endif>
                         <i class="bi text-neon-cyan bi-grid me-1"></i> {{ __('ui.announcements') }}
                     </a>
                 </li>
 
                 <li class="nav-item dropdown">
-                    <a class="nav-link nav-link-custom text-white hover-neon dropdown-toggle px-2 {{ request()->routeIs('byCategory') ? 'active' : '' }}" href="#"
+                    <a class="nav-link nav-link-custom text-white hover-neon dropdown-toggle px-2 {{ request()->routeIs('categories.show') ? 'active' : '' }}" href="#"
                         id="categoriesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         <i class="bi bi-tags text-neon-cyan me-1"></i> {{ __('ui.categories') }}
                     </a>
@@ -45,7 +45,7 @@
                         @foreach ($categories as $category)
                             <li>
                                 <a class="dropdown-menu-item-custom text-white-50 py-2 px-3 rounded d-block text-decoration-none transition-all"
-                                    href="{{ route('byCategory', ['category' => $category]) }}">
+                                    href="{{ route('categories.show', ['category' => $category]) }}">
                                     {{ $category->translated_name }}
                                 </a>
                             </li>
@@ -60,7 +60,7 @@
                         </li>
                         <li>
                             <a class="dropdown-menu-item-custom text-neon-cyan fw-semibold py-2 px-3 rounded d-block text-decoration-none"
-                                href="{{ route('article.index') }}">
+                                href="{{ route('articles.index') }}">
                                 <i class="bi bi-arrow-right-short me-1"></i> {{ __('ui.see_all') }}
                             </a>
                         </li>
@@ -69,13 +69,13 @@
             </ul>
 
             <form class="d-flex mx-auto col-12 col-xl-3 px-0 px-xl-2 my-3 my-xl-0 position-relative"
-                action="{{ route('article.index') }}" method="GET" role="search">
+                action="{{ route('articles.index') }}" method="GET" role="search">
                 <div class="input-group search-group-custom w-100 border border-secondary rounded overflow-hidden">
                     <span class="input-group-text bg-black border-0 text-muted ps-3">
                         <i class="bi bi-search text-neon-cyan"></i>
                     </span>
                     <input class="form-control border-0 text-white search-input-custom bg-black ps-2 py-1.5 fs-7"
-                        type="search" name="query" value="{{ request()->routeIs('article.index') && is_string(request('query')) ? request('query') : '' }}" placeholder="{{ __('ui.search_placeholder') }}" aria-label="{{ __('ui.search') }}">
+                        type="search" name="query" value="{{ request()->routeIs('articles.index') && is_string(request('query')) ? request('query') : '' }}" placeholder="{{ __('ui.search_placeholder') }}" aria-label="{{ __('ui.search') }}">
                     <button
                         class="btn btn-search-submit border-0 text-uppercase text-neon-cyan fw-bold bg-black px-3 transition-all"
                         type="submit">
@@ -125,7 +125,7 @@
 
                     <li class="nav-item me-xl-1 my-1 my-xl-0">
                         <a class="btn btn-outline-neon-cyan btn-sm rounded px-2.5 py-1.5 fw-semibold d-flex align-items-center gap-1 text-uppercase tracking-wide fs-8 transition-all"
-                            href="{{ route('create.article') }}">
+                            href="{{ route('articles.create') }}">
                             <i class="bi bi-plus-circle-fill"></i> {{ __('ui.create_ad') }}
                         </a>
                     </li>

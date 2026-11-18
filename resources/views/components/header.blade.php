@@ -21,7 +21,7 @@
                 </p>
 
                 <div class="d-flex flex-column flex-sm-row justify-content-center justify-content-lg-start gap-3">
-                    <a href="{{route('create.article')}}"
+                    <a href="{{route('articles.create')}}"
                         class="btn btn-gradient-primary border-0 rounded-pill px-4 py-2-5 fw-bold text-uppercase tracking-wider fs-7 shadow shadow-cyan transition-all">
                         <i class="bi bi-plus-circle-fill me-2"></i> {{ __('ui.publish_ad') }}
                     </a>

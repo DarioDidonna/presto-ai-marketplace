@@ -27,7 +27,7 @@ class RevisorUndoTest extends TestCase
     {
         $article = Article::factory()->create(['title' => 'Tavolo antico']);
 
-        $this->actingAs($this->revisor)->from(route('revisor.index'))->patch(route('accept', $article));
+        $this->actingAs($this->revisor)->from(route('revisor.index'))->patch(route('revisor.accept', $article));
         $this->assertTrue($article->fresh()->is_accepted);
 
         // La dashboard mostra subito il pulsante "Annulla", anche con la coda vuota
@@ -48,7 +48,7 @@ class RevisorUndoTest extends TestCase
     public function test_undo_works_only_once(): void
     {
         $article = Article::factory()->create();
-        $this->actingAs($this->revisor)->patch(route('reject', $article));
+        $this->actingAs($this->revisor)->patch(route('revisor.reject', $article));
 
         $this->actingAs($this->revisor)->patch(route('revisor.undo'))->assertSessionHas('message');
         $this->actingAs($this->revisor)->patch(route('revisor.undo'))->assertSessionHas('errorMessage', __('ui.undo_expired'));
@@ -57,7 +57,7 @@ class RevisorUndoTest extends TestCase
     public function test_undo_is_refused_after_the_time_window(): void
     {
         $article = Article::factory()->create();
-        $this->actingAs($this->revisor)->patch(route('accept', $article));
+        $this->actingAs($this->revisor)->patch(route('revisor.accept', $article));
 
         $this->travel(RevisorController::UNDO_MINUTES + 1)->minutes();
 
@@ -68,7 +68,7 @@ class RevisorUndoTest extends TestCase
     public function test_undo_is_refused_if_the_article_changed_meanwhile(): void
     {
         $article = Article::factory()->create();
-        $this->actingAs($this->revisor)->patch(route('accept', $article));
+        $this->actingAs($this->revisor)->patch(route('revisor.accept', $article));
 
         // Un altro revisore (con la sua sessione) cambia l'esito nel frattempo
         $this->travel(1)->minutes();
@@ -88,7 +88,7 @@ class RevisorUndoTest extends TestCase
     {
         $this->freezeTime();
         $article = Article::factory()->create();
-        $this->actingAs($this->revisor)->patch(route('accept', $article));
+        $this->actingAs($this->revisor)->patch(route('revisor.accept', $article));
 
         Notification::assertSentTo($article->user, ArticleReviewed::class, function (ArticleReviewed $notification) {
             return $notification->delay->equalTo(now()->addMinutes(RevisorController::UNDO_MINUTES));
@@ -98,7 +98,7 @@ class RevisorUndoTest extends TestCase
     public function test_email_is_not_sent_if_the_decision_was_undone_or_changed(): void
     {
         $article = Article::factory()->create();
-        $this->actingAs($this->revisor)->patch(route('accept', $article));
+        $this->actingAs($this->revisor)->patch(route('revisor.accept', $article));
 
         $sent = null;
         Notification::assertSentTo($article->user, ArticleReviewed::class, function ($n) use (&$sent) {
@@ -117,7 +117,7 @@ class RevisorUndoTest extends TestCase
 
         // Riaccettato più tardi: vale solo la nuova email, non quella vecchia
         $this->travel(1)->minutes();
-        $this->actingAs($this->revisor)->patch(route('accept', $article));
+        $this->actingAs($this->revisor)->patch(route('revisor.accept', $article));
         $this->assertFalse($sent->shouldSend($article->user, 'mail'));
 
         // Annuncio eliminato dall'autore

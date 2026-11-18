@@ -11,7 +11,7 @@
     <div class="card-body d-flex flex-column p-4">
         <div class="mb-2">
             @if($article->category)
-                <a href="{{ route('byCategory', ['category' => $article->category]) }}" class="badge bg-transparent border border-neon-amber text-neon-amber text-uppercase tracking-wider fs-9 text-decoration-none transition-all hover-glow-amber">
+                <a href="{{ route('categories.show', ['category' => $article->category]) }}" class="badge bg-transparent border border-neon-amber text-neon-amber text-uppercase tracking-wider fs-9 text-decoration-none transition-all hover-glow-amber">
                     <i class="bi bi-tag-fill me-1"></i> {{ $article->category?->translated_name ?? __('ui.no_category') }}
                 </a>
             @else
@@ -34,7 +34,7 @@
                 {{ number_format($article->price, 2, ',', '.') }} €
             </span>
             
-            <a href="{{ route('article.show', compact('article')) }}" class="btn btn-sm btn-outline-neon-cyan text-uppercase tracking-wide fs-8 fw-bold transition-all">
+            <a href="{{ route('articles.show', compact('article')) }}" class="btn btn-sm btn-outline-neon-cyan text-uppercase tracking-wide fs-8 fw-bold transition-all">
                 {{ __('ui.details') }} <i class="bi bi-arrow-right-short ms-1"></i>
             </a>
         </div>

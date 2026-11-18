@@ -71,7 +71,7 @@ class ShoppingAssistantTest extends TestCase
             'id' => $published->id,
             'title' => 'Bici da corsa',
             'price' => '480,00',
-            'url' => route('article.show', $published),
+            'url' => route('articles.show', $published),
             'image' => asset('media/placeholder.svg'),
         ]], $messages[1]['articles']); // niente annunci in revisione o inesistenti, link generato da Laravel
 

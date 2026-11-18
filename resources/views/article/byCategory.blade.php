@@ -41,7 +41,7 @@
                         </h4>
                         @auth
                             <a class="btn btn-cyber-gradient text-uppercase tracking-wider fs-7 fw-bold"
-                                href="{{ route('create.article') }}">
+                                href="{{ route('articles.create') }}">
                                 <i class="bi bi-plus-circle me-2"></i>{{ __('ui.publish_article') }}
                             </a>
                         @endauth

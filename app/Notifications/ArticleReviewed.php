@@ -62,12 +62,12 @@ class ArticleReviewed extends Notification implements ShouldQueue
             ->line(__("ui.review_mail_{$status}_line", ['title' => MailText::plain($this->article->title)]));
 
         if ($this->accepted) {
-            return $mail->action(__('ui.review_mail_view_ad'), route('article.show', $this->article));
+            return $mail->action(__('ui.review_mail_view_ad'), route('articles.show', $this->article));
         }
 
         // Rifiutato: l'autore può correggerlo, e la modifica lo rimette in revisione
         return $mail
             ->line(__('ui.review_mail_rejected_hint'))
-            ->action(__('ui.edit_ad'), route('article.edit', $this->article));
+            ->action(__('ui.edit_ad'), route('articles.edit', $this->article));
     }
 }
