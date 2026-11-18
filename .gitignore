@@ -34,3 +34,9 @@ docs/*.mov
 docs/*.mp4
 # Report di copertura generati dai test
 /coverage.txt
+
+# Test nel browser (Playwright)
+/test-results
+/storage/e2e
+/playwright-report
+/blob-report

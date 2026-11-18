@@ -139,7 +139,7 @@ flowchart LR
 | Agente AI | Python 3.12 (uv), FastAPI, LangChain + LangGraph, Ollama con `qwen2.5:3b` (testo) e `qwen2.5vl:3b` (visione, facoltativo) in locale |
 | Dati | MySQL, code e sessioni su database |
 | Avvio | Docker Compose (sito, coda, Reverb, MySQL, agente, Ollama facoltativo) |
-| Test e qualità | PHPUnit (299 test), pytest (127 test), copertura sopra il 90% (soglia della CI), Larastan (PHPStan livello 5), Laravel Pint, ruff, GitHub Actions |
+| Test e qualità | PHPUnit (299 test), pytest (127 test), Playwright (4 test nel browser), copertura sopra il 90% (soglia della CI), Larastan (PHPStan livello 5), Laravel Pint, ruff, GitHub Actions |
 
 ---
 
@@ -261,6 +261,7 @@ Parti da `.env.production.example` (copialo in `.env` sul server e compila i val
 | Comando | Descrizione |
 |---|---|
 | `php artisan test` | Esegue la suite di test |
+| `npm run test:browser` | Test nel browser (Playwright): chat dell'assistente e messaggi in tempo reale |
 | `composer run demo` | Riporta il sito allo stato demo (cancella il database locale) |
 | `php artisan app:ai-setup` | Configura il token dell'agente AI e controlla uv, Ollama e modello |
 | `cd ai-agent && uv run python evals/shopping.py` | Valuta l'assistente acquisti con il modello vero (anche `evals/review.py`) |
@@ -294,9 +295,11 @@ I test usano un database SQLite in memoria e il driver Scout `collection`: non t
 
 L'agente Python ha 127 test propri (`cd ai-agent && uv run pytest`) con un modello e un Laravel finti: tool, difese contro il prompt injection, memoria della conversazione, regole di moderazione, endpoint e autenticazione.
 
+**Test nel browser.** Le parti in JavaScript, che PHPUnit non può eseguire, hanno 4 test con [Playwright](https://playwright.dev) in un browser vero: la chat dell'assistente risponde con le schede degli annunci e una scheda si aggiunge al carrello aggiornando il contatore senza ricaricare la pagina; un messaggio arriva all'altra persona in tempo reale (due browser, Reverb vero) e, se è su un'altra pagina, sale il contatore dei non letti. Playwright avvia da solo sito, Reverb e un agente AI finto (stesse API di quello vero, senza Ollama) su un database e una cartella `storage` separati: il database di sviluppo non viene toccato. Comando: `npm run test:browser`, con `composer run dev` fermo (usano le stesse porte). Gira anche in CI.
+
 **Copertura.** La CI misura la copertura di entrambe le suite (PCOV nel job MySQL, `pytest-cov` per l'agente), mostra la percentuale nel riepilogo di ogni esecuzione e fallisce se le righe coperte scendono sotto il **90%**. In locale: `cd ai-agent && uv run pytest --cov=presto_ai_agent`; per PHP serve PCOV o Xdebug (`php artisan test --coverage`).
 
-A ogni pull request e a ogni push su `main` **GitHub Actions** esegue le due suite (quella Laravel con il build del front-end, su SQLite e su MySQL) e l'**analisi statica** con [Larastan](https://github.com/larastan/larastan), controlla lo stile del codice con [Laravel Pint](https://laravel.com/docs/pint) e [ruff](https://docs.astral.sh/ruff/), cerca vulnerabilità note nelle dipendenze (Composer, npm, Python; **Dependabot** apre da solo le PR con le correzioni di sicurezza e, ogni settimana, quelle di aggiornamento) e avvia l'ambiente Docker verificando che il sito risponda e che l'agente controlli i volti delle foto demo: vedi [`.github/workflows/tests.yml`](.github/workflows/tests.yml). In locale: `composer analyse`, `vendor/bin/pint` e `cd ai-agent && uv run ruff format .`.
+A ogni pull request e a ogni push su `main` **GitHub Actions** esegue le due suite (quella Laravel con il build del front-end, su SQLite e su MySQL) e l'**analisi statica** con [Larastan](https://github.com/larastan/larastan), controlla lo stile del codice con [Laravel Pint](https://laravel.com/docs/pint) e [ruff](https://docs.astral.sh/ruff/), cerca vulnerabilità note nelle dipendenze (Composer, npm, Python; **Dependabot** apre da solo le PR con le correzioni di sicurezza e, ogni settimana, quelle di aggiornamento) esegue i test nel browser con Playwright e avvia l'ambiente Docker verificando che il sito risponda e che l'agente controlli i volti delle foto demo: vedi [`.github/workflows/tests.yml`](.github/workflows/tests.yml). In locale: `composer analyse`, `vendor/bin/pint` e `cd ai-agent && uv run ruff format .`.
 
 **Analisi statica.** Larastan (PHPStan per Laravel) al livello 5, configurato in [`phpstan.neon`](phpstan.neon), su `app`, `routes` e `database`: zero errori, senza baseline né soppressioni. Introdurlo ha richiesto di dichiarare i tipi delle relazioni Eloquent (`BelongsTo<User, $this>`) e ha trovato un bug vero: il prezzo era un `float` a **precisione singola** (`float('price', 8, 2)`, dove dal Laravel 11 il terzo argomento è ignorato), quindi 999.999,99 €, il massimo ammesso dal modulo, veniva salvato come 1.000.000 €. Ora è `decimal(10,2)`, con un test.
 
