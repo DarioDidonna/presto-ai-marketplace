@@ -33,8 +33,8 @@ class CartTest extends TestCase
     {
         $article = Article::factory()->accepted()->create(['title' => 'Bici da corsa']);
 
-        $this->actingAs($this->buyer)->from(route('article.show', $article))->post(route('cart.add', $article))
-            ->assertRedirect(route('article.show', $article))
+        $this->actingAs($this->buyer)->from(route('articles.show', $article))->post(route('cart.add', $article))
+            ->assertRedirect(route('articles.show', $article))
             ->assertSessionHas('message', __('ui.cart_added', ['title' => 'Bici da corsa']));
         $this->actingAs($this->buyer)->post(route('cart.add', $article));
 
@@ -110,7 +110,7 @@ class CartTest extends TestCase
         $article = Article::factory()->accepted()->create();
         $this->buyer->cart()->attach($article->id);
 
-        $this->actingAs($article->user)->delete(route('article.destroy', $article));
+        $this->actingAs($article->user)->delete(route('articles.destroy', $article));
 
         $this->assertSame(0, $this->buyer->cart()->count());
     }
@@ -133,16 +133,16 @@ class CartTest extends TestCase
     {
         $article = Article::factory()->accepted()->create();
 
-        $this->actingAs($this->buyer)->get(route('article.show', $article))->assertSee(__('ui.cart_add'));
+        $this->actingAs($this->buyer)->get(route('articles.show', $article))->assertSee(__('ui.cart_add'));
 
         $this->buyer->cart()->attach($article->id);
-        $this->actingAs($this->buyer)->get(route('article.show', $article))
+        $this->actingAs($this->buyer)->get(route('articles.show', $article))
             ->assertSee(__('ui.cart_in'))
             ->assertDontSee(__('ui.cart_add'));
 
         // Né l'autore né un ospite vedono il pulsante
-        $this->actingAs($article->user)->get(route('article.show', $article))->assertDontSee(__('ui.cart_add'));
+        $this->actingAs($article->user)->get(route('articles.show', $article))->assertDontSee(__('ui.cart_add'));
         auth()->logout();
-        $this->get(route('article.show', $article))->assertDontSee(__('ui.cart_add'));
+        $this->get(route('articles.show', $article))->assertDontSee(__('ui.cart_add'));
     }
 }

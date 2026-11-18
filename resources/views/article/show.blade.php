@@ -13,7 +13,7 @@
         <div class="container py-4 position-relative z-1">
 
             <div class="mb-4">
-                <a href="{{ route('article.index') }}"
+                <a href="{{ route('articles.index') }}"
                     class="text-neon-cyan text-decoration-none text-uppercase tracking-wider fs-8 fw-bold transition-all hover-back">
                     <i class="bi bi-arrow-left me-2"></i> {{ __('ui.back_to_board') }}
                 </a>
@@ -113,7 +113,7 @@
 
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             @if ($article->category)
-                                <a href="{{ route('byCategory', ['category' => $article->category]) }}"
+                                <a href="{{ route('categories.show', ['category' => $article->category]) }}"
                                     class="badge bg-transparent border border-neon-amber text-neon-amber text-uppercase tracking-wider fs-9 text-decoration-none transition-all hover-glow-amber">
                                     <i class="bi bi-tag-fill me-1"></i> {{ $article->category?->translated_name ?? __('ui.no_category') }}
                                 </a>
@@ -170,7 +170,7 @@
                                     </p>
                                     <div class="row g-2">
                                         <div class="col-12 col-md-7">
-                                            <a href="{{ route('article.edit', $article) }}"
+                                            <a href="{{ route('articles.edit', $article) }}"
                                                 class="btn btn-cyber-gradient w-100 text-uppercase text-light tracking-wider fs-7 fw-bold">
                                                 <i class="bi bi-pencil-square me-2"></i>{{ __('ui.edit_ad') }}
                                             </a>
@@ -233,7 +233,7 @@
                     </div>
                     <div class="modal-footer border-secondary">
                         <button type="button" class="btn btn-outline-secondary text-white" data-bs-dismiss="modal">{{ __('ui.cancel') }}</button>
-                        <form action="{{ route('article.destroy', $article) }}" method="POST" class="m-0">
+                        <form action="{{ route('articles.destroy', $article) }}" method="POST" class="m-0">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="btn btn-danger fw-bold">{{ __('ui.confirm_delete_button') }}</button>

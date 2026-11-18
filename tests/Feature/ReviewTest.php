@@ -170,12 +170,12 @@ class ReviewTest extends TestCase
     public function test_article_page_links_to_the_seller_with_the_rating(): void
     {
         $article = Article::factory()->accepted()->create();
-        $this->get(route('article.show', $article))
+        $this->get(route('articles.show', $article))
             ->assertSee(route('sellers.show', $article->user))
             ->assertSee(__('ui.reviews_none_yet'));
 
         $this->reviewsFor($article->user, [5, 4]);
-        $this->get(route('article.show', $article))
+        $this->get(route('articles.show', $article))
             ->assertSee('4,5')
             ->assertSee(trans_choice('ui.reviews_count', 2, ['count' => 2]));
     }

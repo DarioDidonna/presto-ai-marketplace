@@ -7,7 +7,7 @@ use App\Models\Category;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
-class ExampleTest extends TestCase
+class PublicPagesTest extends TestCase
 {
     use RefreshDatabase;
 
@@ -23,7 +23,7 @@ class ExampleTest extends TestCase
 
     public function test_protected_pages_redirect_guests_to_login(): void
     {
-        $this->get(route('create.article'))->assertRedirect(route('login'));
+        $this->get(route('articles.create'))->assertRedirect(route('login'));
     }
 
     public function test_missing_records_return_404(): void

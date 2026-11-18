@@ -98,7 +98,7 @@ class AgentApiTest extends TestCase
             ->assertJsonPath('article.id', $article->id)
             ->assertJsonPath('article.seller', 'Giulia Romano')
             ->assertJsonPath('article.description', 'Riga uno Riga due')
-            ->assertJsonPath('article.url', route('article.show', $article));
+            ->assertJsonPath('article.url', route('articles.show', $article));
 
         $this->assertStringNotContainsString('giulia@privata.it', $response->getContent());
         $this->assertStringNotContainsString('password', $response->getContent());

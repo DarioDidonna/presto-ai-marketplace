@@ -36,7 +36,7 @@
 
                     {{-- Un nodo per ciascuno degli ultimi annunci pubblicati (prima: 4 eventi inventati) --}}
                     @foreach ($stats['latest_articles'] as $latest)
-                        <a href="{{ route('article.show', $latest) }}"
+                        <a href="{{ route('articles.show', $latest) }}"
                             class="network-node node-active node-pos-{{ $loop->iteration }} {{ $loop->index ? 'delay-' . $loop->index : '' }}"
                             data-info="{{ __('ui.network_new_article', ['title' => Str::limit($latest->title, 40), 'category' => $latest->category?->translated_name ?? __('ui.no_category')]) }}"
                             aria-label="{{ $latest->title }}">

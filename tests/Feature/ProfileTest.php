@@ -142,7 +142,7 @@ class ProfileTest extends TestCase
         $this->actingAs(User::factory()->create())->get(route('profile.show'))
             ->assertSee(__('ui.quick_actions'))
             ->assertSee(__('ui.apply_revisor'))
-            ->assertSee('action="'.route('become.revisor').'"', false);
+            ->assertSee('action="'.route('revisor.apply').'"', false);
 
         $this->actingAs(User::factory()->revisor()->create())->get(route('profile.show'))
             ->assertDontSee(__('ui.apply_revisor'))

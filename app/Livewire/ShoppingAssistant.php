@@ -131,7 +131,7 @@ class ShoppingAssistant extends Component
                 'id' => $article->id,
                 'title' => $article->title,
                 'price' => number_format((float) $article->price, 2, ',', '.'),
-                'url' => route('article.show', $article),
+                'url' => route('articles.show', $article),
                 'image' => $article->images->first()?->thumbnailUrl() ?? asset('media/placeholder.svg'),
             ])
             ->values()

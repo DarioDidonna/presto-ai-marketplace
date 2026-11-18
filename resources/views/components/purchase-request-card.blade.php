@@ -38,7 +38,7 @@
                 alt="" width="56" height="56" loading="lazy" class="rounded object-fit-cover flex-shrink-0">
             <div class="flex-grow-1 min-w-0">
                 @if ($item->article?->is_accepted)
-                    <a href="{{ route('article.show', $item->article) }}" class="text-white fw-semibold text-decoration-none d-block text-truncate">{{ $item->title }}</a>
+                    <a href="{{ route('articles.show', $item->article) }}" class="text-white fw-semibold text-decoration-none d-block text-truncate">{{ $item->title }}</a>
                 @else
                     <span class="text-white fw-semibold d-block text-truncate">{{ $item->title }}</span>
                 @endif

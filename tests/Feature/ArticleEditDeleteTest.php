@@ -44,13 +44,13 @@ class ArticleEditDeleteTest extends TestCase
     {
         $article = Article::factory()->accepted()->create();
 
-        $this->actingAs($article->user)->get(route('article.show', $article))
-            ->assertSee(route('article.edit', $article), false)
+        $this->actingAs($article->user)->get(route('articles.show', $article))
+            ->assertSee(route('articles.edit', $article), false)
             ->assertSee('id="confirmDeleteModal"', false);
 
         foreach ([User::factory()->create(), User::factory()->revisor()->create()] as $other) {
-            $this->actingAs($other)->get(route('article.show', $article))
-                ->assertDontSee(route('article.edit', $article), false)
+            $this->actingAs($other)->get(route('articles.show', $article))
+                ->assertDontSee(route('articles.edit', $article), false)
                 ->assertDontSee('confirmDeleteModal', false);
         }
     }
@@ -59,10 +59,10 @@ class ArticleEditDeleteTest extends TestCase
     {
         $article = Article::factory()->accepted()->create();
 
-        $this->get(route('article.edit', $article))->assertRedirect(route('login'));
-        $this->actingAs(User::factory()->create())->get(route('article.edit', $article))->assertForbidden();
-        $this->actingAs(User::factory()->revisor()->create())->get(route('article.edit', $article))->assertForbidden();
-        $this->actingAs($article->user)->get(route('article.edit', $article))
+        $this->get(route('articles.edit', $article))->assertRedirect(route('login'));
+        $this->actingAs(User::factory()->create())->get(route('articles.edit', $article))->assertForbidden();
+        $this->actingAs(User::factory()->revisor()->create())->get(route('articles.edit', $article))->assertForbidden();
+        $this->actingAs($article->user)->get(route('articles.edit', $article))
             ->assertOk()
             ->assertSeeLivewire(EditArticleForm::class);
     }
@@ -81,7 +81,7 @@ class ArticleEditDeleteTest extends TestCase
             ->set('form.category', $newCategory->id)
             ->call('update')
             ->assertHasNoErrors()
-            ->assertRedirect(route('article.show', $article));
+            ->assertRedirect(route('articles.show', $article));
 
         $article->refresh();
         $this->assertSame('Titolo aggiornato', $article->title);
@@ -171,7 +171,7 @@ class ArticleEditDeleteTest extends TestCase
         $article = $this->articleWithImages(2);
 
         $this->actingAs($article->user)
-            ->delete(route('article.destroy', $article))
+            ->delete(route('articles.destroy', $article))
             ->assertRedirect(route('profile.show'))
             ->assertSessionHas('message');
 
@@ -184,9 +184,9 @@ class ArticleEditDeleteTest extends TestCase
     {
         $article = Article::factory()->accepted()->create();
 
-        $this->delete(route('article.destroy', $article))->assertRedirect(route('login'));
-        $this->actingAs(User::factory()->create())->delete(route('article.destroy', $article))->assertForbidden();
-        $this->actingAs(User::factory()->revisor()->create())->delete(route('article.destroy', $article))->assertForbidden();
+        $this->delete(route('articles.destroy', $article))->assertRedirect(route('login'));
+        $this->actingAs(User::factory()->create())->delete(route('articles.destroy', $article))->assertForbidden();
+        $this->actingAs(User::factory()->revisor()->create())->delete(route('articles.destroy', $article))->assertForbidden();
 
         $this->assertModelExists($article);
     }

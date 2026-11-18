@@ -85,12 +85,12 @@ class SalesTest extends TestCase
     {
         app(PurchaseRequestWorkflow::class)->accept($this->request);
 
-        $this->get(route('article.index'))->assertDontSee('Bici da corsa');
+        $this->get(route('articles.index'))->assertDontSee('Bici da corsa');
         $this->get('/annunci?query=bici')->assertDontSee('Bici da corsa');
-        $this->get(route('byCategory', $this->bike->category))->assertDontSee('Bici da corsa');
+        $this->get(route('categories.show', $this->bike->category))->assertDontSee('Bici da corsa');
         $this->get('/')->assertDontSee('Bici da corsa');
 
-        $this->actingAs(User::factory()->create())->get(route('article.show', $this->bike))
+        $this->actingAs(User::factory()->create())->get(route('articles.show', $this->bike))
             ->assertOk()
             ->assertSee(__('ui.sold_notice'))
             ->assertDontSee(__('ui.cart_add'));

@@ -95,7 +95,7 @@ class FrontendTest extends TestCase
         Article::factory()->create(['title' => 'Annuncio in revisione']);
 
         $this->get('/')
-            ->assertSee(route('article.show', $latest), false)
+            ->assertSee(route('articles.show', $latest), false)
             ->assertSee('Bici da corsa', false)
             ->assertDontSee('Annuncio in revisione', false);
     }
@@ -132,16 +132,16 @@ class FrontendTest extends TestCase
     {
         $article = Article::factory()->accepted()->create();
 
-        $this->get(route('article.show', $article))
+        $this->get(route('articles.show', $article))
             ->assertSee(__('ui.login_to_contact'))
             ->assertDontSee('mailto:', false);
 
         // L'email del venditore si vede solo dopo una vendita accettata, mai sulla pagina pubblica dell'annuncio
-        $this->actingAs(User::factory()->create())->get(route('article.show', $article))
+        $this->actingAs(User::factory()->create())->get(route('articles.show', $article))
             ->assertDontSee($article->user->email)
             ->assertDontSee('mailto:', false);
 
-        $this->actingAs($article->user)->get(route('article.show', $article))
+        $this->actingAs($article->user)->get(route('articles.show', $article))
             ->assertSee(__('ui.your_own_ad'))
             ->assertDontSee('mailto:', false);
     }
@@ -152,9 +152,9 @@ class FrontendTest extends TestCase
         $rejected = Article::factory()->rejected()->create();
         $accepted = Article::factory()->accepted()->create();
 
-        $this->actingAs($pending->user)->get(route('article.show', $pending))->assertSee(__('ui.article_pending_notice'));
-        $this->actingAs($rejected->user)->get(route('article.show', $rejected))->assertSee(__('ui.article_rejected_notice'));
-        $this->actingAs($accepted->user)->get(route('article.show', $accepted))
+        $this->actingAs($pending->user)->get(route('articles.show', $pending))->assertSee(__('ui.article_pending_notice'));
+        $this->actingAs($rejected->user)->get(route('articles.show', $rejected))->assertSee(__('ui.article_rejected_notice'));
+        $this->actingAs($accepted->user)->get(route('articles.show', $accepted))
             ->assertDontSee(__('ui.article_pending_notice'))
             ->assertDontSee(__('ui.article_rejected_notice'));
     }
@@ -258,7 +258,7 @@ class FrontendTest extends TestCase
 
         $this->get('/')->assertSee('<title>Presto.it - '.__('ui.meta_tagline').'</title>', false);
         $this->get('/annunci')->assertSee('<title>'.__('ui.all_ads_title').' · Presto.it</title>', false);
-        $this->get(route('article.show', $article))
+        $this->get(route('articles.show', $article))
             ->assertSee('<title>Divano letto · Presto.it</title>', false)
             ->assertSee('<meta name="description" content="Comodo divano in tessuto grigio">', false);
         $this->get('/login')->assertSee('<title>'.__('ui.login').' · Presto.it</title>', false);

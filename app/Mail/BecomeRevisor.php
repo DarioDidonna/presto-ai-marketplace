@@ -31,7 +31,7 @@ class BecomeRevisor extends Mailable implements ShouldQueue
     {
         $this->user = $user;
         $this->approvalUrl = rtrim((string) config('app.url'), '/')
-            .URL::temporarySignedRoute('make.revisor', now()->addDays(self::LINK_DAYS), ['user' => $user], absolute: false);
+            .URL::temporarySignedRoute('revisor.confirm', now()->addDays(self::LINK_DAYS), ['user' => $user], absolute: false);
     }
 
     /**
