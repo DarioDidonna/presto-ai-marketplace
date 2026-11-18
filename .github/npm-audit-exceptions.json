@@ -1,0 +1,7 @@
+[
+    {
+        "id": "GHSA-fc5q-39xc-vjpf",
+        "until": "2026-12-31",
+        "reason": "picomatch (ReDoS con pattern glob malevoli), nessuna versione corretta pubblicata (<= 4.0.7). Lo usano solo Vite e laravel-vite-plugin durante la build e lo sviluppo, con pattern scritti in vite.config.js: nessun input degli utenti, niente nel sito né nel browser. Dependabot proporrà la correzione appena esce. Approvata da Dario Didonna il 18/11/2026."
+    }
+]
