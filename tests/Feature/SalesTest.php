@@ -49,7 +49,11 @@ class SalesTest extends TestCase
             ->assertSee(__('ui.sales_accept'))
             ->assertSee(__('ui.sales_decline'));
 
-        $this->actingAs(User::factory()->create())->get(route('sales.index'))->assertSee(__('ui.sales_empty'))->assertDontSee('Anna');
+        // Nome fisso: con uno casuale ("Annabel") la navbar conteneva "Anna" e il test falliva circa una volta su mille
+        $this->actingAs(User::factory()->create(['name' => 'Luca']))->get(route('sales.index'))
+            ->assertSee(__('ui.sales_empty'))
+            ->assertDontSee(__('ui.sales_buyer', ['name' => 'Anna']))
+            ->assertDontSee('anna@example.com');
     }
 
     public function test_seller_email_links_to_the_requests_page(): void
